@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/sounds/sound-list.css' %}" />
+{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <h1>My Sounds</h1>
+</section>
+
+<section class="card-container">
+  {% for sound in sound_list %}
+  <div class="card">
+    <div class="card-content">
+      <h2 class="card-title">{{ sound.name }}</h2>
+      <p>{{ sound.get_type_display }}</p>
+      <p><small>Added {{ sound.created_at|date:"M d, Y" }}</small></p>
+      <div class="card-actions">
+        <a class="btn submit" href="#">▶ Play</a>
+        <a class="btn secondary" href="#">Edit</a>
+        <a class="btn danger" href="#">Delete</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+{% endblock %}
