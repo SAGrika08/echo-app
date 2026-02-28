@@ -1,0 +1,87 @@
+/* static/css/home.css */
+
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  height: 100%;
+}
+
+main > section {
+  width: 100%;
+  padding: 10px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.header-logo-container {
+  display: none;
+}
+
+.logo-container {
+  max-width: 375px;
+}
+
+.logo-img-container {
+  width: 80%;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--borders);
+  border-radius: var(--card-border-radius);
+  color: var(--secondary);
+  font-size: var(--font-reg);
+  margin-bottom: 10px;
+}
+
+.logo-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+}
+
+.logo-text-container h1 {
+  font-size: clamp(3.2rem, 3vw, 4.8rem);
+  margin: 10px 0;
+  color: var(--text-color);
+}
+
+.logo-text-container p {
+  font-size: var(--font-reg);
+  color: var(--secondary);
+  margin-bottom: 20px;
+}
+
+.logo-text-container .btn {
+  align-self: flex-end;
+  margin-right: 0;
+  margin-top: 16px;
+}
+
+@media only screen and (min-width: 768px) {
+  main {
+    justify-content: space-around;
+  }
+
+  main > section {
+    width: 40%;
+  }
+
+  .logo-text-container {
+    border: var(--borders);
+    padding: 20px;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-box-shadow);
+    width: 100%;
+  }
+
+  .logo-container {
+    max-width: 520px;
+  }
+}

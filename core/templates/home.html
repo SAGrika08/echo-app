@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}" />
+{% endblock %}
+{% block content %}
+
+<section class="logo-container">
+  <div class="logo-img-container">
+    <img src="" alt="Echo Logo" />
+  </div>
+  <div class="logo-text-container">
+    <h1>Echo</h1>
+    <p>Constructed atmospheres.</p>
+    <a class="btn submit" href="/accounts/signup">Sign Up</a>
+    <a class="btn secondary" href="/accounts/login">Log In</a>
+  </div>
+</section>
+
+{% endblock %}
