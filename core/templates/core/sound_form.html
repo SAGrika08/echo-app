@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/sounds/sound-form.css' %}" />
+{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Add a Sound</h1>
+</div>
+<p class="page-content">Record, upload, or link a sound to add it to your library.</p>
+
+<div class="tab-container">
+  <button type="button" class="tab-btn active" onclick="showTab(event, 'upload')">⬆ Upload</button>
+  <button type="button" class="tab-btn" onclick="showTab(event, 'url')">🔗 URL</button>
+  <button type="button" class="tab-btn" onclick="showTab(event, 'record')">🎙 Record</button>
+</div>
+
+<form action="" method="post" enctype="multipart/form-data" class="form-container">
+  {% csrf_token %}
+  <input type="hidden" name="type" id="type-field" value="uploaded" />
+
+  <!-- Upload tab -->
+  <div class="tab-content" id="tab-upload">
+    <table>
+      <tr>
+        <th>File</th>
+        <td>
+          <div class="drop-zone" id="drop-zone">
+            <p>Drag and drop your audio file here</p>
+            <small>Supports .mp3 .wav .ogg</small>
+            <br /><br />
+            <button type="button" class="btn secondary" onclick="document.getElementById('file').click()">
+              Choose File
+            </button>
+            <input type="file" name="file" id="file" accept=".mp3,.wav,.ogg" style="display:none;" />
+          </div>
+          <p id="file-name" class="feedback-text"></p>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- URL tab -->
+  <div class="tab-content" id="tab-url" style="display:none;">
+    <table>
+      <tr>
+        <th><label for="url">Audio URL</label></th>
+        <td>
+          <input type="url" name="url" id="url" placeholder="https://example.com/sound.mp3" />
+          <p id="url-display" class="feedback-text"></p>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Record tab -->
+  <div class="tab-content" id="tab-record" style="display:none;">
+    <div class="record-container">
+      <button type="button" class="btn record-btn" id="record-btn">🎙</button>
+      <p class="feedback-text">Click the mic to start recording</p>
+    </div>
+  </div>
+
+  <hr class="form-divider" />
+
+  <!-- Name field always at the bottom -->
+  <table>
+    <tr>
+      <th><label for="name">Give it a name</label></th>
+      <td><input type="text" name="name" id="name" required /></td>
+    </tr>
+  </table>
+
+  <button type="submit" class="btn submit">Save Sound</button>
+
+</form>
+
+<script>
+  function showTab(event, tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tab).style.display = 'block';
+    event.target.classList.add('active');
+    document.getElementById('type-field').value = tab === 'upload' ? 'uploaded' : tab;
+  }
+
+  document.getElementById('file').addEventListener('change', function () {
+    document.getElementById('file-name').textContent = '📎 ' + this.files[0].name;
+  });
+
+  document.getElementById('url').addEventListener('input', function () {
+    const display = document.getElementById('url-display');
+    display.textContent = this.value ? '🔗 ' + this.value : '';
+  });
+
+  const dropZone = document.querySelector('.drop-zone');
+
+  dropZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    this.classList.add('drag-over');
+  });
+
+  dropZone.addEventListener('dragleave', function () {
+    this.classList.remove('drag-over');
+  });
+
+  dropZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    document.getElementById('file').files = e.dataTransfer.files;
+    document.getElementById('file-name').textContent = '📎 ' + file.name;
+  });
+</script>
+
+{% endblock %}

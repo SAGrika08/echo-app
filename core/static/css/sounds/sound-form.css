@@ -1,0 +1,127 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.tab-container {
+  display: flex;
+  width: 100%;
+  padding: 0 40px;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tab-btn {
+  flex: 1;
+  font-size: var(--font-reg);
+  padding: 8px 20px;
+  border: var(--borders);
+  background-color: var(--button-bg);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: 6px;
+  opacity: 0.5;
+}
+
+.tab-btn.active {
+  opacity: 1;
+  background-color: var(--button-bg-hover);
+  color: var(--link-hover-color);
+}
+
+.tab-btn:hover {
+  opacity: 1;
+  background-color: var(--button-bg-hover);
+}
+
+table {
+  padding: 0 40px;
+  width: 100%;
+  border-spacing: 0 20px;
+}
+
+th {
+  text-align: left;
+  padding: 6px 20px 0 0;
+  font-weight: normal;
+  vertical-align: top;
+  font-size: var(--font-reg);
+}
+
+td {
+  max-width: 60%;
+}
+
+td > * {
+  width: 100%;
+  padding: 2px 4px;
+  font-size: var(--font-l);
+}
+
+.drop-zone {
+  border: 2px dashed rgb(180, 160, 220);
+  border-radius: var(--card-border-radius);
+  padding: 40px 20px;
+  text-align: center;
+  font-size: var(--font-reg);
+  color: var(--secondary);
+  background-color: var(--button-bg);
+  cursor: pointer;
+  width: 100%;
+}
+
+.drop-zone p {
+  margin: 4px 0;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+  background-color: var(--button-bg-hover);
+  border-color: var(--link-hover-color);
+}
+
+.record-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  gap: 14px;
+}
+
+.record-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  font-size: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--borders);
+  background-color: var(--button-bg);
+  cursor: pointer;
+  padding: 0;
+}
+
+.record-btn:hover {
+  background-color: var(--button-bg-hover);
+}
+
+.feedback-text {
+  font-size: var(--font-reg);
+  color: var(--secondary);
+  margin-top: 6px;
+  word-break: break-all;
+}
+
+.btn {
+  align-self: flex-end;
+  margin-right: 40px;
+}
+
+.form-divider {
+  border: none;
+  border-top: 1px solid rgb(180, 160, 220);
+  margin: 10px 40px;
+}

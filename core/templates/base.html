@@ -20,7 +20,10 @@
       </div>
       <nav>
         <ul>
-            <li><a href="{% url 'sound-index' %}"">Sounds</a></li>
+            <li><a href="{% url 'sound-index' %}">Sounds</a></li>
+            <li><a href="{% url 'scene-index' %}">Scenes</a></li>
+            <li><a href="{% url 'sound-create' %}">Add Sound</a></li>
+            <li><a href="{% url 'mixer' %}">Mixer</a></li>
           <li><a href="{% url 'about' %}">About</a></li>
         </ul>
       </nav>
@@ -29,5 +32,7 @@
       {% block content %}
       {% endblock %}
     </main>
+    {% block overlay %}
+{% endblock %}
   </body>
 </html>

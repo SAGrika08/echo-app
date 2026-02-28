@@ -7,23 +7,112 @@
 
 <section class="page-header">
   <h1>My Sounds</h1>
+  <a class="btn submit" href="{% url 'sound-create' %}">+ Add Sound</a>
 </section>
 
 <section class="card-container">
   {% for sound in sound_list %}
   <div class="card">
     <div class="card-content">
-      <h2 class="card-title">{{ sound.name }}</h2>
+
+      <h2 class="card-title" id="title-{{ sound.id }}">{{ sound.name }}</h2>
+
+      <form method="POST" action="{% url 'sound-edit' sound.id %}">
+        {% csrf_token %}
+        <input
+          type="text"
+          name="name"
+          value="{{ sound.name }}"
+          id="input-{{ sound.id }}"
+          class="edit-input"
+          style="display:none;"
+        />
+        <button
+          type="submit"
+          class="btn secondary"
+          id="save-{{ sound.id }}"
+          style="display:none;">
+          Save
+        </button>
+        <button
+          type="button"
+          class="btn secondary"
+          id="cancel-{{ sound.id }}"
+          style="display:none;"
+          data-id="{{ sound.id }}"
+          onclick="cancelEdit(this.dataset.id)">
+          Cancel
+        </button>
+      </form>
+
       <p>{{ sound.get_type_display }}</p>
       <p><small>Added {{ sound.created_at|date:"M d, Y" }}</small></p>
+
       <div class="card-actions">
         <a class="btn submit" href="#">▶ Play</a>
-        <a class="btn secondary" href="#">Edit</a>
-        <a class="btn danger" href="#">Delete</a>
+        <button
+          type="button"
+          class="btn secondary"
+          data-id="{{ sound.id }}"
+          onclick="toggleEdit(this.dataset.id)">
+          Edit
+        </button>
+        <button
+          type="button"
+          class="btn danger"
+          data-id="{{ sound.id }}"
+          data-name="{{ sound.name }}"
+          onclick="showOverlay(this.dataset.id, this.dataset.name)">
+          Delete
+        </button>
       </div>
+
     </div>
   </div>
   {% endfor %}
 </section>
+
+<!-- Single overlay on the sound list page itself -->
+<div class="overlay" id="delete-overlay" style="display:none;">
+  <div class="overlay-box">
+    <h2>Delete Sound?</h2>
+    <p id="overlay-name"></p>
+    <p>This cannot be undone.</p>
+    <form method="POST" id="delete-form">
+      {% csrf_token %}
+      <div class="overlay-actions">
+        <button type="button" class="btn secondary" onclick="hideOverlay()">Cancel</button>
+        <button type="submit" class="btn danger">Yes, Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function toggleEdit(id) {
+    document.getElementById('title-' + id).style.display = 'none';
+    document.getElementById('input-' + id).style.display = 'block';
+    document.getElementById('save-' + id).style.display = 'inline-block';
+    document.getElementById('cancel-' + id).style.display = 'inline-block';
+    document.getElementById('input-' + id).focus();
+  }
+
+  function cancelEdit(id) {
+    document.getElementById('title-' + id).style.display = 'block';
+    document.getElementById('input-' + id).style.display = 'none';
+    document.getElementById('save-' + id).style.display = 'none';
+    document.getElementById('cancel-' + id).style.display = 'none';
+  }
+
+  function showOverlay(id, name) {
+    document.getElementById('overlay-name').textContent = 'Are you sure you want to delete ' + name + '?';
+    document.getElementById('delete-form').action = '/sounds/' + id + '/delete/';
+    document.getElementById('delete-overlay').style.display = 'flex';
+  }
+
+  function hideOverlay() {
+    document.getElementById('delete-overlay').style.display = 'none';
+  }
+</script>
 
 {% endblock %}
