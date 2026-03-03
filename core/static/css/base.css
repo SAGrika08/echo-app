@@ -270,8 +270,10 @@ nav li {
     gap: 12px;
   }
 
-  .header-logo-container {
-    padding: 7px 16px;
+.header-logo-container {
+    padding: 0 16px;
+    height: 42px;
+    line-height: 1;
     background: var(--nav-bg-ff);
     border: var(--borders);
     border-radius: 18px;
@@ -282,9 +284,44 @@ nav li {
     margin: 0;
     margin-left: auto;
     padding: 0 8px;
+    height: 42px;
     background: var(--nav-bg-ff);
     border: var(--borders);
     border-radius: 18px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   }
+
+  nav ul {
+    height: 100%;
+  }
+
+  nav li {
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+}
+
+#logout-form {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+#logout-form button {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  line-height: 1;
+}
+
+#logout-form button:hover {
+  color: var(--link-hover-color);
 }
