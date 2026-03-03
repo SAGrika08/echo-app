@@ -5,6 +5,11 @@
   flex-wrap: wrap;
 }
 
+.page-header {
+  justify-content: space-between;
+  padding: 0 30px;
+}
+
 .card {
   width: 275px;
   margin: 10px;

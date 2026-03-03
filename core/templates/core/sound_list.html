@@ -7,7 +7,7 @@
 
 <section class="page-header">
   <h1>My Sounds</h1>
-  <a class="btn submit" href="{% url 'sound-create' %}">+ Add Sound</a>
+  <a class="btn submit" href="{% url 'sound-create' %}"> + Add Sound</a>
 </section>
 
 <section class="card-container">
@@ -46,10 +46,10 @@
       </form>
 
       <p>{{ sound.get_type_display }}</p>
-      <p><small>Added {{ sound.created_at|date:"M d, Y" }}</small></p>
+      <p><small> {{ sound.created_at|date:"M d, Y" }}</small></p>
 
       <div class="card-actions">
-        <a class="btn submit" href="#">▶ Play</a>
+        <a class="btn submit" href="#"> Play</a>
         <button
           type="button"
           class="btn secondary"
@@ -72,7 +72,6 @@
   {% endfor %}
 </section>
 
-<!-- Single overlay on the sound list page itself -->
 <div class="overlay" id="delete-overlay" style="display:none;">
   <div class="overlay-box">
     <h2>Delete Sound?</h2>
