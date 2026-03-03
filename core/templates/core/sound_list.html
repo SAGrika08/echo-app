@@ -7,64 +7,59 @@
 
 <section class="page-header">
   <h1>My Sounds</h1>
-  <a class="btn submit" href="{% url 'sound-create' %}"> + Add Sound</a>
+  <a class="btn submit" href="{% url 'sound-create' %}">+ Add Sound</a>
 </section>
 
 <section class="card-container">
   {% for sound in sound_list %}
   <div class="card">
+    <div class="card-top-actions" id="top-actions-{{ sound.id }}">
+      <button
+        type="button"
+        class="icon-btn"
+        data-id="{{ sound.id }}"
+        onclick="toggleEdit(this.dataset.id)">
+        <i data-lucide="pencil"></i>
+      </button>
+      <button
+        type="button"
+        class="icon-btn danger"
+        data-id="{{ sound.id }}"
+        data-name="{{ sound.name }}"
+        onclick="showOverlay(this.dataset.id, this.dataset.name)">
+        <i data-lucide="trash-2"></i>
+      </button>
+    </div>
+
     <div class="card-content">
 
       <h2 class="card-title" id="title-{{ sound.id }}">{{ sound.name }}</h2>
 
       <form method="POST" action="{% url 'sound-edit' sound.id %}">
-        {% csrf_token %}
-        <input
-          type="text"
-          name="name"
-          value="{{ sound.name }}"
-          id="input-{{ sound.id }}"
-          class="edit-input"
-          style="display:none;"
-        />
-        <button
-          type="submit"
-          class="btn secondary"
-          id="save-{{ sound.id }}"
-          style="display:none;">
-          Save
-        </button>
-        <button
-          type="button"
-          class="btn secondary"
-          id="cancel-{{ sound.id }}"
-          style="display:none;"
-          data-id="{{ sound.id }}"
-          onclick="cancelEdit(this.dataset.id)">
-          Cancel
-        </button>
-      </form>
+    {% csrf_token %}
+        <div class="edit-row" id="edit-row-{{ sound.id }}" style="display:none;">
+       <input type="text" name="name" value="{{ sound.name }}" id="input-{{ sound.id }}" class="edit-input" />
+     <button type="submit" class="icon-btn confirm">
+      <i data-lucide="check"></i>
+     </button>
+    <button type="button" class="icon-btn" data-id="{{ sound.id }}" onclick="cancelEdit(this.dataset.id)">
+      <i data-lucide="x"></i>
+    </button>
+  </div>
+</form>
 
-      <p>{{ sound.get_type_display }}</p>
-      <p><small> {{ sound.created_at|date:"M d, Y" }}</small></p>
+      <div class="vinyl {{ sound.type }}">
+  <div class="vinyl-hole"></div>
+</div>
+<div class="card-meta">
+  <span class="type-badge {{ sound.type }}">{{ sound.get_type_display }}</span>
+  <p class="sound-date">{{ sound.created_at|date:"M d, Y" }}</p>
+</div>
 
       <div class="card-actions">
-        <a class="btn submit" href="#"> Play</a>
-        <button
-          type="button"
-          class="btn secondary"
-          data-id="{{ sound.id }}"
-          onclick="toggleEdit(this.dataset.id)">
-          Edit
-        </button>
-        <button
-          type="button"
-          class="btn danger"
-          data-id="{{ sound.id }}"
-          data-name="{{ sound.name }}"
-          onclick="showOverlay(this.dataset.id, this.dataset.name)">
-          Delete
-        </button>
+        <a class="play-btn" href="#">
+          <i data-lucide="volume-2"></i> Play
+        </a>
       </div>
 
     </div>
@@ -89,19 +84,17 @@
 
 <script>
   function toggleEdit(id) {
-    document.getElementById('title-' + id).style.display = 'none';
-    document.getElementById('input-' + id).style.display = 'block';
-    document.getElementById('save-' + id).style.display = 'inline-block';
-    document.getElementById('cancel-' + id).style.display = 'inline-block';
-    document.getElementById('input-' + id).focus();
-  }
+  document.getElementById('title-' + id).style.display = 'none';
+  document.getElementById('edit-row-' + id).style.display = 'flex';
+  document.getElementById('top-actions-' + id).style.display = 'none';
+  document.getElementById('input-' + id).focus();
+}
 
-  function cancelEdit(id) {
-    document.getElementById('title-' + id).style.display = 'block';
-    document.getElementById('input-' + id).style.display = 'none';
-    document.getElementById('save-' + id).style.display = 'none';
-    document.getElementById('cancel-' + id).style.display = 'none';
-  }
+function cancelEdit(id) {
+  document.getElementById('title-' + id).style.display = 'block';
+  document.getElementById('edit-row-' + id).style.display = 'none';
+  document.getElementById('top-actions-' + id).style.display = 'flex';
+}
 
   function showOverlay(id, name) {
     document.getElementById('overlay-name').textContent = 'Are you sure you want to delete ' + name + '?';
@@ -112,6 +105,7 @@
   function hideOverlay() {
     document.getElementById('delete-overlay').style.display = 'none';
   }
+
 </script>
 
 {% endblock %}

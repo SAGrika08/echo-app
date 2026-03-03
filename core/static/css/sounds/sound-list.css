@@ -1,54 +1,255 @@
-.card-container {
-  padding: 0 30px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+
+.page-header .btn.submit:hover {
+  background-color: var(--submit);
+  color: white;
+  border-color: var(--submit);
 }
 
-.page-header {
+.card-container {
+  padding: 20px 30px;
+  display: flex;
   justify-content: space-between;
-  padding: 0 30px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
+
 
 .card {
   width: 275px;
-  margin: 10px;
-  border: var(--borders);
-  box-shadow: var(--card-box-shadow);
-  border-radius: var(--card-border-radius);
+  margin: 12px;
+  border: 1px solid rgb(220, 215, 235);
+  box-shadow: 0 2px 12px rgba(100, 80, 160, 0.08);
+  border-radius: 12px;
   background-color: #ffffff;
+  position: relative;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 20px rgba(100, 80, 160, 0.14);
+}
+
+
+.card-top-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+  z-index: 1;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--secondary);
+  padding: 5px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.icon-btn:hover {
+  background-color: rgb(240, 236, 250);
+}
+
+.icon-btn.danger {
+  color: var(--danger);
+}
+
+.icon-btn.danger:hover {
+  background-color: rgb(250, 235, 235);
+}
+
+.icon-btn.confirm {
+  color: var(--submit);
+}
+
+.icon-btn.confirm:hover {
+  background-color: rgb(220, 240, 235);
+}
+
+.icon-btn svg {
+  width: 15px;
+  height: 15px;
 }
 
 .card-content {
-  padding: 10px;
+  padding: 16px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.card > a {
-  text-decoration: none;
+.vinyl {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: 
+    conic-gradient(
+      rgba(255,255,255,0.15) 0deg,
+      transparent 50deg,
+      rgba(255,255,255,0.18) 120deg,
+      transparent 160deg,
+      rgba(255,255,255,0.12) 240deg,
+      transparent 280deg,
+      transparent 360deg
+    ),
+
+    repeating-radial-gradient(
+      circle,
+      #2e2a3e 0px,
+      #2e2a3e 2px,
+      #3d3850 3px,
+      #3d3850 5px
+    );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px auto 14px;
+  position: relative;
+  cursor: pointer;
+  animation: spin 4s linear infinite;
+  animation-play-state: paused;
+}
+
+.card:hover .vinyl {
+  animation-play-state: running;
+}
+
+.vinyl::before {
+  content: '';
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.vinyl.recorded::before { background: rgb(124, 111, 173); }
+.vinyl.uploaded::before { background: rgb(94, 173, 168); }
+.vinyl.url::before      { background: rgb(196, 163, 90); }
+
+.vinyl-hole {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  z-index: 1;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.card-title {
+  font-size: var(--font-l);
+  font-weight: 600;
+  margin: 0 0 8px;
   color: var(--text-color);
+  padding-right: 60px;
 }
 
-.card h2 {
-  margin: 10px 0;
-  font-size: var(--font-xl);
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  margin-right: 62px;
 }
 
-.card p {
-  margin: 5px 0;
+.edit-input {
+  flex: 1;
   font-size: var(--font-reg);
+  padding: 5px 8px;
+  border: 1px solid rgb(200, 190, 230);
+  border-radius: 6px;
+  font-family: inherit;
+  outline: none;
+}
+
+.edit-input:focus {
+  border-color: var(--link-hover-color);
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.type-badge {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.type-badge.recorded {
+  background: rgb(235, 230, 250);
+  color: rgb(100, 80, 160);
+}
+
+.type-badge.uploaded {
+  background: rgb(220, 240, 235);
+  color: rgb(60, 140, 130);
+}
+
+.type-badge.url {
+  background: rgb(250, 240, 220);
+  color: rgb(160, 120, 50);
+}
+
+.sound-date {
+  font-size: 1.2rem;
+  color: var(--secondary);
+  margin: 0;
+  white-space: nowrap;
 }
 
 .card-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgb(240, 236, 250);
 }
 
-body {
-  align-items: unset;
-  overflow-x: unset;
+.play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  font-size: 1.3rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--submit);
+  color: var(--submit);
+  background: rgb(240, 250, 248);
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+
+.play-btn:hover {
+  background: var(--submit);
+  color: white;
+}
+
+.play-btn svg {
+  width: 13px;
+  height: 13px;
 }
 
 .overlay {
@@ -57,9 +258,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,9 +267,9 @@ body {
 
 .overlay-box {
   background: white;
-  border: var(--borders);
-  border-radius: var(--card-border-radius);
-  box-shadow: var(--card-box-shadow);
+  border: 1px solid rgb(220, 215, 235);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(100, 80, 160, 0.15);
   padding: 30px 40px;
   max-width: 400px;
   width: 100%;
@@ -93,4 +292,16 @@ body {
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
+}
+
+@media only screen and (max-width: 768px) {
+  .card {
+    width: calc(50% - 24px);
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .card {
+    width: 100%;
+  }
 }

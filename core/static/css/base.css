@@ -1,4 +1,4 @@
-/* static/css/base.css */
+
 
 html {
   box-sizing: border-box;
@@ -39,7 +39,7 @@ body {
   --font-xl: 2.4rem;
   --font-l: 1.8rem;
   --font-reg: 1.6rem;
-  --card-border-radius: 6px;
+  --card-border-radius: 12px;
 }
 
 header {
@@ -98,14 +98,18 @@ nav li {
 .page-header {
   display: flex;
   align-items: center;
-  margin: 20px;
+  justify-content: space-between;
+  padding: 20px 30px;
+  margin: 0;
+  width: 100%;
 }
+
 
 .btn {
   font-size: var(--font-l);
   padding: 8px 16px;
   border-radius: 6px;
-  border-width: 2px;
+  border-width: 1px;
   border-style: solid;
   text-decoration: none;
   background-color: var(--button-bg);

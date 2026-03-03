@@ -10,7 +10,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
     <title>Echo</title>
     {% block head %}
     {% endblock %}
@@ -38,6 +37,9 @@
     </main>
     {% block overlay %}
 {% endblock %}
-<script>lucide.createIcons();</script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
   </body>
 </html>
