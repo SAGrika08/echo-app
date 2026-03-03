@@ -5,9 +5,11 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Scene, SceneSound, Sound
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
 
-def home(request):
-    return render(request, 'home.html')
+
+class Home(LoginView):
+    template_name = 'home.html'
 
 def about(request):
     return render(request, 'about.html')
