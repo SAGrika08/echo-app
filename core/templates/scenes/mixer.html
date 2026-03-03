@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/scenes/mixer.css' %}" />
+{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <h1>Mixer</h1>
+</section>
+<p class="page-content">Toggle sounds to add to your mix, set the volume, then save as a scene.</p>
+
+<form method="POST" action="{% url 'mixer' %}" class="mixer-layout">
+  {% csrf_token %}
+
+  <div class="mixer-panel">
+    {% for sound in sounds %}
+    <div class="mixer-track" id="track-{{ sound.id }}">
+
+      <input
+        type="checkbox"
+        name="sounds"
+        value="{{ sound.id }}"
+        id="check-{{ sound.id }}"
+        style="display:none;"
+        onchange="toggleTrack({{ sound.id }})"
+      />
+
+      <div class="toggle" id="toggle-{{ sound.id }}" data-id="{{ sound.id }}" onclick="clickToggle(this.dataset.id)">
+        <div class="toggle-dot"></div>
+      </div>
+
+      <div class="track-label">{{ sound.name }}</div>
+      <span class="badge {{ sound.type }}">{{ sound.get_type_display }}</span>
+
+      <div class="slider-wrap">
+        <input
+          type="range"
+          name="level_{{ sound.id }}"
+          id="slider-{{ sound.id }}"
+          min="0"
+          max="100"
+          value="50"
+          class="slider-input"
+          data-id="{{ sound.id }}"
+          oninput="updateLabel(this.dataset.id, this.value)"
+        />
+        <span class="vol-pct" id="vol-{{ sound.id }}">50%</span>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="save-panel">
+    <h2 class="save-title">Save as Scene</h2>
+
+    <div class="form-field">
+      <label for="name">Scene Name</label>
+      <input type="text" name="name" id="name" placeholder="e.g. 3am writing mode..." required />
+    </div>
+
+    <div class="form-field">
+      <label>Visibility</label>
+      <div class="vis-row">
+        <label class="vis-opt">
+          <input type="checkbox" name="is_public" id="is_public" />
+          Make Public
+        </label>
+      </div>
+      <p class="feedback-text">Leave unchecked to keep private.</p>
+    </div>
+
+    <button type="submit" class="btn submit">Save Scene</button>
+    <p class="feedback-text">Redirects to your scene after saving.</p>
+  </div>
+
+</form>
+
+<script>
+  function clickToggle(id) {
+    const checkbox = document.getElementById('check-' + id);
+    checkbox.checked = !checkbox.checked;
+    toggleTrack(id);
+  }
+
+  function toggleTrack(id) {
+    const track = document.getElementById('track-' + id);
+    const toggle = document.getElementById('toggle-' + id);
+    const checked = document.getElementById('check-' + id).checked;
+    if (checked) {
+      track.classList.add('active');
+      toggle.classList.add('on');
+    } else {
+      track.classList.remove('active');
+      toggle.classList.remove('on');
+    }
+  }
+
+  function updateLabel(id, value) {
+    document.getElementById('vol-' + id).textContent = value + '%';
+  }
+</script>
+
+{% endblock %}

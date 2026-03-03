@@ -81,12 +81,12 @@ class MixerView(View):
 
         return redirect('scene-detail', pk=scene.id)
 
-def add_sound_to_scene(request, pk):
+def add_sound_to_scene(request, scene_id):
     if request.method == 'POST':
         sound_id = request.POST.get('sound_id')
         level = request.POST.get('level', 50)
-        SceneSound.objects.create(scene_id=pk, sound_id=sound_id, level=int(level))
-    return redirect('scene-detail', pk=pk)
+        SceneSound.objects.create(scene_id=scene_id, sound_id=sound_id, level=int(level))
+    return redirect('scene-detail', pk=scene_id)
 
 def remove_sound_from_scene(request, scene_id, sound_id):
     if request.method == 'POST':

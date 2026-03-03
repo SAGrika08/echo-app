@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/scenes/scene-list.css' %}" />
+{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <h1>My Scenes</h1>
+  <a class="btn submit" href="{% url 'mixer' %}">+ New Scene</a>
+</section>
+
+<section class="card-container">
+  {% for scene in scene_list %}
+  <div class="card">
+    <div class="card-content">
+
+      <h2 class="card-title">{{ scene.name }}</h2>
+      <p>{{ scene.sounds.count }} track{{ scene.sounds.count|pluralize }}</p>
+      <p><small>Created {{ scene.created_at|date:"M d, Y" }}</small></p>
+
+      {% if scene.is_public %}
+        <p class="pill public">Public</p>
+      {% else %}
+        <p class="pill private">Private</p>
+      {% endif %}
+
+      <div class="card-actions">
+        <a class="btn submit" href="#">▶ Play</a>
+        <a class="btn secondary" href="{% url 'scene-detail' scene.id %}">View</a>
+        <button
+          type="button"
+          class="btn danger"
+          data-id="{{ scene.id }}"
+          data-name="{{ scene.name }}"
+          onclick="showOverlay(this.dataset.id, this.dataset.name)">
+          Delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<div class="overlay" id="delete-overlay" style="display:none;">
+  <div class="overlay-box">
+    <h2>Delete Scene?</h2>
+    <p id="overlay-name"></p>
+    <p>This cannot be undone.</p>
+    <form method="POST" id="delete-form">
+      {% csrf_token %}
+      <div class="overlay-actions">
+        <button type="button" class="btn secondary" onclick="hideOverlay()">Cancel</button>
+        <button type="submit" class="btn danger">Yes, Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function showOverlay(id, name) {
+    document.getElementById('overlay-name').textContent = 'Are you sure you want to delete ' + name + '?';
+    document.getElementById('delete-form').action = '/scenes/' + id + '/delete/';
+    document.getElementById('delete-overlay').style.display = 'flex';
+  }
+
+  function hideOverlay() {
+    document.getElementById('delete-overlay').style.display = 'none';
+  }
+</script>
+
+{% endblock %}

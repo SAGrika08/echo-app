@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/scenes/scene-detail.css' %}" />
+{% endblock %}
+{% block content %}
+
+<div class="back-link">
+  <a class="btn secondary" href="{% url 'scene-index' %}">Back to Scenes</a>
+</div>
+
+<div class="detail-layout">
+
+  <div class="detail-panel">
+
+    <div class="detail-head">
+      <div>
+        <h1 class="detail-title" id="title-{{ scene.id }}">{{ scene.name }}</h1>
+
+        <form method="POST" action="{% url 'scene-update' scene.id %}">
+          {% csrf_token %}
+          <input
+            type="text"
+            name="name"
+            value="{{ scene.name }}"
+            id="input-{{ scene.id }}"
+            class="edit-input"
+            style="display:none;"
+          />
+          <button type="submit" class="btn secondary" id="save-{{ scene.id }}" style="display:none;">Save</button>
+          <button type="button" class="btn secondary" id="cancel-{{ scene.id }}" style="display:none;" data-id="{{ scene.id }}" onclick="cancelEdit(this.dataset.id)">Cancel</button>
+        </form>
+
+        <div class="detail-meta">
+          {% if scene.is_public %}
+            <span class="pill public">Public</span>
+          {% else %}
+            <span class="pill private">Private</span>
+          {% endif %}
+          {{ scene.sounds.count }} track{{ scene.sounds.count|pluralize }}
+          &nbsp;·&nbsp; Created {{ scene.created_at|date:"M d, Y" }}
+          &nbsp;·&nbsp; Updated {{ scene.updated_at|date:"M d, Y" }}
+        </div>
+      </div>
+
+      <div class="detail-head-actions">
+        <button type="button" class="btn secondary" data-id="{{ scene.id }}" onclick="toggleEdit(this.dataset.id)">Rename</button>
+        <button type="button" class="btn danger" data-id="{{ scene.id }}" data-name="{{ scene.name }}" onclick="showOverlay(this.dataset.id, this.dataset.name)">Delete</button>
+      </div>
+    </div>
+
+    <h2 class="section-title">Tracks</h2>
+
+    {% for scene_sound in scene_sounds %}
+    <div class="track-row">
+      <div class="track-info">
+        <p class="track-name">{{ scene_sound.sound.name }}</p>
+        <p class="track-type {{ scene_sound.sound.type }}">{{ scene_sound.sound.get_type_display }}</p>
+      </div>
+
+      <form method="POST" action="{% url 'update-sound-level-in-scene' scene.id scene_sound.sound.id %}">
+        {% csrf_token %}
+        <div class="slider-wrap">
+          <input
+            type="range"
+            name="level"
+            min="0"
+            max="100"
+            value="{{ scene_sound.level }}"
+            class="slider-input"
+            data-id="{{ scene_sound.sound.id }}"
+            oninput="updateLabel(this.dataset.id, this.value)"
+          />
+          <span class="vol-pct" id="vol-{{ scene_sound.sound.id }}">{{ scene_sound.level }}%</span>
+          <button type="submit" class="btn secondary">Save</button>
+        </div>
+      </form>
+
+      <form method="POST" action="{% url 'remove-sound-from-scene' scene.id scene_sound.sound.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn danger">Remove</button>
+      </form>
+    </div>
+    {% endfor %}
+
+    <h2 class="section-title">Add a Sound</h2>
+
+    {% for sound in sounds_not_in_scene %}
+    <form method="POST" action="{% url 'add-sound-to-scene' scene.id %}">
+      {% csrf_token %}
+      <input type="hidden" name="sound_id" value="{{ sound.id }}" />
+      <div class="add-track-row">
+        <p class="track-name">{{ sound.name }}</p>
+        <p class="track-type {{ sound.type }}">{{ sound.get_type_display }}</p>
+        <input type="number" name="level" value="50" min="0" max="100" class="level-input" />
+        <button type="submit" class="btn submit">Add</button>
+      </div>
+    </form>
+    {% endfor %}
+
+  </div>
+
+  <div class="side-panel">
+
+    <div class="side-card">
+      <h2 class="side-title">Actions</h2>
+      <a class="btn submit" href="#">Play Scene</a>
+      <a class="btn secondary" href="{% url 'mixer' %}">Edit in Mixer</a>
+
+      <form method="POST" action="{% url 'scene-update' scene.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="name" value="{{ scene.name }}" />
+        {% if scene.is_public %}
+          <input type="hidden" name="is_public" value="" />
+          <button type="submit" class="btn secondary">Make Private</button>
+        {% else %}
+          <input type="hidden" name="is_public" value="on" />
+          <button type="submit" class="btn secondary">Make Public</button>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="side-card">
+      <h2 class="side-title">Scene Info</h2>
+      <div class="info-row">
+        <span>Tracks</span>
+        <span class="info-val">{{ scene.sounds.count }}</span>
+      </div>
+      <div class="info-row">
+        <span>Visibility</span>
+        <span class="info-val">{% if scene.is_public %}Public{% else %}Private{% endif %}</span>
+      </div>
+      <div class="info-row">
+        <span>Created</span>
+        <span class="info-val">{{ scene.created_at|date:"M d, Y" }}</span>
+      </div>
+      <div class="info-row">
+        <span>Updated</span>
+        <span class="info-val">{{ scene.updated_at|date:"M d, Y" }}</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="overlay" id="delete-overlay" style="display:none;">
+  <div class="overlay-box">
+    <h2>Delete Scene?</h2>
+    <p id="overlay-name"></p>
+    <p>This cannot be undone.</p>
+    <form method="POST" id="delete-form">
+      {% csrf_token %}
+      <div class="overlay-actions">
+        <button type="button" class="btn secondary" onclick="hideOverlay()">Cancel</button>
+        <button type="submit" class="btn danger">Yes, Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function toggleEdit(id) {
+    document.getElementById('title-' + id).style.display = 'none';
+    document.getElementById('input-' + id).style.display = 'block';
+    document.getElementById('save-' + id).style.display = 'inline-block';
+    document.getElementById('cancel-' + id).style.display = 'inline-block';
+    document.getElementById('input-' + id).focus();
+  }
+
+  function cancelEdit(id) {
+    document.getElementById('title-' + id).style.display = 'block';
+    document.getElementById('input-' + id).style.display = 'none';
+    document.getElementById('save-' + id).style.display = 'none';
+    document.getElementById('cancel-' + id).style.display = 'none';
+  }
+
+  function updateLabel(id, value) {
+    document.getElementById('vol-' + id).textContent = value + '%';
+  }
+
+  function showOverlay(id, name) {
+    document.getElementById('overlay-name').textContent = 'Are you sure you want to delete ' + name + '?';
+    document.getElementById('delete-form').action = '/scenes/' + id + '/delete/';
+    document.getElementById('delete-overlay').style.display = 'flex';
+  }
+
+  function hideOverlay() {
+    document.getElementById('delete-overlay').style.display = 'none';
+  }
+</script>
+
+{% endblock %}

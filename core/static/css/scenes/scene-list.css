@@ -1,0 +1,107 @@
+.card-container {
+  padding: 0 30px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 275px;
+  margin: 10px;
+  border: var(--borders);
+  box-shadow: var(--card-box-shadow);
+  border-radius: var(--card-border-radius);
+  background-color: #ffffff;
+}
+
+.card-content {
+  padding: 10px;
+  width: 100%;
+}
+
+.card > a {
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+.card h2 {
+  margin: 10px 0;
+  font-size: var(--font-xl);
+}
+
+.card p {
+  margin: 5px 0;
+  font-size: var(--font-reg);
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: var(--font-reg);
+  font-weight: 600;
+  margin: 6px 0;
+}
+
+.pill.public {
+  background-color: rgb(220, 240, 235);
+  color: var(--submit);
+}
+
+.pill.private {
+  background-color: rgb(235, 230, 250);
+  color: var(--link-hover-color);
+}
+
+body {
+  align-items: unset;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.overlay-box {
+  background: white;
+  border: var(--borders);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-box-shadow);
+  padding: 30px 40px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  z-index: 10000;
+}
+
+.overlay-box h2 {
+  margin-bottom: 10px;
+}
+
+.overlay-box p {
+  font-size: var(--font-reg);
+  color: var(--secondary);
+  margin-bottom: 6px;
+}
+
+.overlay-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
