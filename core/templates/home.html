@@ -27,12 +27,25 @@
   <div class="hero-content">
     <h1 class="hero-title">Echo</h1>
     <p class="hero-tagline">Constructed atmospheres.</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="/accounts/signup">Sign Up</a>
-      <a class="btn btn-secondary" href="/accounts/login">Log In</a>
-    </div>
   </div>
 
 </section>
+
+{% if not user.is_authenticated %}
+<section>
+  <form action="{% url 'home' %}" method="post" class="login">
+    <h1>Welcome back</h1>
+    <p class="login-sub">Log in to your sound world.</p>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <button type="submit" class="btn submit">Log In</button>
+    <div class="auth-switch">
+      Don't have an account? <a href="/accounts/signup">Sign Up</a>
+    </div>
+  </form>
+</section>
+{% endif %}
+
 
 {% endblock %}
