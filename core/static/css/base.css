@@ -19,9 +19,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
   background-color: #f5f3f8;
   --nav-bg: rgba(210, 200, 240, 0.7);
