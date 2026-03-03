@@ -223,3 +223,8 @@ main > section {
     padding: 48px 52px;
   }
 }
+
+.auth-page {
+  min-height: calc(100vh - 53px);
+  justify-content: center;
+}

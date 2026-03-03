@@ -1,0 +1,75 @@
+/* static/css/about.css */
+
+.about {
+  padding: 48px 24px;
+}
+
+.about h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 800;
+  font-size: clamp(3.2rem, 5vw, 4.8rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-color);
+  margin: 0 0 8px;
+}
+
+.about hr {
+  border: none;
+  border-top: var(--borders);
+  margin: 0 0 28px;
+}
+
+.about h2 {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: var(--font-xl);
+  color: var(--text-color);
+  margin: 40px 0 8px;
+  letter-spacing: 0.04em;
+}
+
+.about .page-content {
+  font-size: var(--font-reg);
+  color: var(--secondary);
+  line-height: 1.8;
+  margin: 0 0 20px;
+}
+
+.about .step {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px 20px;
+  background: white;
+  border: var(--borders);
+  border-radius: var(--card-border-radius);
+  margin-bottom: 12px;
+  font-size: var(--font-reg);
+  color: var(--secondary);
+  line-height: 1.6;
+}
+
+.about .step-label {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #7c6fad, #5eada8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  flex-shrink: 0;
+  min-width: 40px;
+}
+
+.about-link {
+  color: #5eada8;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.about-link:hover {
+  text-decoration: underline;
+}

@@ -120,6 +120,7 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+LOGIN_URL = 'home'
 LOGIN_REDIRECT_URL = 'scene-index'
 LOGOUT_REDIRECT_URL = 'home'
 

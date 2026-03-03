@@ -6,7 +6,6 @@
 {% block content %}
 
 <section class="hero">
-
   <div class="hero-mark">
     <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="hero-ripple">
       <defs>
@@ -23,29 +22,26 @@
       <circle cx="100" cy="100" r="8" fill="url(#hero-rg)"/>
     </svg>
   </div>
-
   <div class="hero-content">
     <h1 class="hero-title">Echo</h1>
     <p class="hero-tagline">Constructed atmospheres.</p>
   </div>
-
 </section>
 
-{% if not user.is_authenticated %}
 <section>
-  <form action="{% url 'home' %}" method="post" class="login">
-    <h1>Welcome back</h1>
-    <p class="login-sub">Log in to your sound world.</p>
+  <form action="" method="post" class="login" autocomplete="off">
+    <h1>Create your account</h1>
+    <p class="login-sub">Build your personal sound world. Layer, mix, and save your atmospheres.</p>
+    {% if error_message %}
+      <p style="color: var(--danger); font-size: 1.3rem; margin: 0 0 16px;">{{ error_message }}</p>
+    {% endif %}
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="hidden" name="next" value="{{ next }}" />
-    <button type="submit" class="btn submit">Log In</button>
+    <button type="submit" class="btn submit">Create Account</button>
     <div class="auth-switch">
-      Don't have an account? <a href="{% url 'signup' %}">Sign Up</a>
+      Already have an account? <a href="{% url 'home' %}">Log In</a>
     </div>
   </form>
 </section>
-{% endif %}
-
 
 {% endblock %}

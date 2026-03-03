@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views 
+from .views import signup
 
 urlpatterns = [
     path('', views.Home.as_view(), name='home'),
@@ -16,4 +17,5 @@ urlpatterns = [
     path('scenes/<int:scene_id>/add_sound/', views.add_sound_to_scene, name='add-sound-to-scene'),
     path('scenes/<int:scene_id>/remove_sound/<int:sound_id>/', views.remove_sound_from_scene, name='remove-sound-from-scene'),
     path('scenes/<int:scene_id>/update_sound_level/<int:sound_id>/', views.update_sound_level_in_scene, name='update-sound-level-in-scene'),
+    path('accounts/signup/', signup, name='signup'),
 ]
