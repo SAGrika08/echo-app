@@ -56,11 +56,18 @@
   <p class="sound-date">{{ sound.created_at|date:"M d, Y" }}</p>
 </div>
 
-      <div class="card-actions">
-        <a class="play-btn" href="#">
-          <i data-lucide="volume-2"></i> Play
-        </a>
-      </div>
+      {% if sound.file %}
+  <audio id="audio-{{ sound.id }}" src="{{ sound.file.url }}"></audio>
+{% elif sound.url %}
+  <audio id="audio-{{ sound.id }}" src="{{ sound.url }}"></audio>
+{% endif %}
+
+<div class="card-actions">
+  <a class="play-btn" id="play-btn-{{ sound.id }}" onclick="togglePlay('{{ sound.id }}')" href="#">
+    <i data-lucide="volume-2" id="play-icon-{{ sound.id }}"></i>
+    <span id="play-label-{{ sound.id }}">Play</span>
+  </a>
+</div>
 
     </div>
   </div>
@@ -105,6 +112,39 @@ function cancelEdit(id) {
   function hideOverlay() {
     document.getElementById('delete-overlay').style.display = 'none';
   }
+
+let currentlyPlaying = null;
+let currentlyPlayingId = null;
+
+function togglePlay(id) {
+  const audio = document.getElementById('audio-' + id);
+  if (!audio) return;
+
+  if (currentlyPlaying && currentlyPlaying !== audio) {
+    currentlyPlaying.pause();
+    currentlyPlaying.currentTime = 0;
+    document.getElementById('play-label-' + currentlyPlayingId).textContent = 'Play';
+    document.getElementById('play-icon-' + currentlyPlayingId).setAttribute('data-lucide', 'volume-2');
+    lucide.createIcons();
+  }
+
+  if (audio.paused) {
+    audio.play();
+    currentlyPlaying = audio;
+    currentlyPlayingId = id;
+    document.getElementById('play-label-' + id).textContent = 'Stop';
+    document.getElementById('play-icon-' + id).setAttribute('data-lucide', 'pause');
+    lucide.createIcons();
+  } else {
+    audio.pause();
+    audio.currentTime = 0;
+    currentlyPlaying = null;
+    currentlyPlayingId = null;
+    document.getElementById('play-label-' + id).textContent = 'Play';
+    document.getElementById('play-icon-' + id).setAttribute('data-lucide', 'volume-2');
+    lucide.createIcons();
+  }
+}
 
 </script>
 

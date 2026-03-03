@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Scene, SceneSound, Sound
 from django.urls import reverse_lazy
-
+from django.contrib.auth.models import User
 
 def home(request):
     return render(request, 'home.html')
@@ -15,9 +15,23 @@ def about(request):
 class SoundList(ListView):
     model = Sound
 
-class SoundCreate(CreateView):
-    model = Sound
-    fields = ['name', 'type', 'file', 'url']
+class SoundCreate(View):
+    def get(self, request):
+        return render(request, 'core/sound_form.html')
+
+    def post(self, request):
+        name = request.POST.get('name')
+        sound_type = request.POST.get('type')
+        sound = Sound(name=name, type=sound_type)
+
+        if sound_type == 'uploaded':
+            sound.file = request.FILES.get('file')
+        elif sound_type == 'url':
+            sound.url = request.POST.get('url')
+
+        sound.user = User.objects.first()
+        sound.save()
+        return redirect('sound-index')
 
     # def form_valid(self, form):
     # form.instance.user = self.request.user

@@ -1,33 +1,57 @@
-.form-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+.page-header {
+  padding: 0 40px;
+}
+
+.page-content {
+  padding: 0 40px;
+  margin-bottom: 20px;
+  font-size: var(--font-reg);
+  color: var(--secondary);
 }
 
 .tab-container {
   display: flex;
   width: 100%;
-  padding: 0 40px;
-  gap: 8px;
-  margin-bottom: 10px;
+  max-width: 560px;
+  margin: 0 auto 0 auto;
+  padding: 0;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  border: 1px solid rgb(220, 215, 235);
+  border-bottom: none;
 }
 
 .tab-btn {
   flex: 1;
   font-size: var(--font-reg);
-  padding: 8px 20px;
-  border: var(--borders);
-  background-color: var(--button-bg);
+  padding: 12px 20px;
+  border: none;
+  border-right: 1px solid rgb(220, 215, 235);
+  background-color: rgb(245, 243, 250);
   cursor: pointer;
   font-family: inherit;
   font-weight: 600;
-  border-radius: 6px;
-  opacity: 0.5;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  border-radius: 0;
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn svg {
+  width: 15px;
+  height: 15px;
 }
 
 .tab-btn.active {
   opacity: 1;
-  background-color: var(--button-bg-hover);
+  background-color: white;
   color: var(--link-hover-color);
 }
 
@@ -36,44 +60,43 @@
   background-color: var(--button-bg-hover);
 }
 
-table {
-  padding: 0 40px;
+.form-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  border-spacing: 0 20px;
+  max-width: 560px;
+  margin: 0 auto;
+  background: white;
+  border: 1px solid rgb(220, 215, 235);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 2px 12px rgba(100, 80, 160, 0.08);
+  padding: 30px;
+  gap: 20px;
 }
 
-th {
-  text-align: left;
-  padding: 6px 20px 0 0;
-  font-weight: normal;
-  vertical-align: top;
-  font-size: var(--font-reg);
-}
-
-td {
-  max-width: 60%;
-}
-
-td > * {
+.tab-content {
   width: 100%;
-  padding: 2px 4px;
-  font-size: var(--font-l);
 }
 
 .drop-zone {
-  border: 2px dashed rgb(180, 160, 220);
-  border-radius: var(--card-border-radius);
-  padding: 40px 20px;
+  border: 2px dashed rgb(200, 190, 230);
+  border-radius: 12px;
+  padding: 30px 20px;
   text-align: center;
   font-size: var(--font-reg);
   color: var(--secondary);
   background-color: var(--button-bg);
   cursor: pointer;
   width: 100%;
+  transition: all 0.15s ease;
 }
 
 .drop-zone p {
   margin: 4px 0;
+}
+
+.drop-zone small {
+  font-size: 1.2rem;
 }
 
 .drop-zone:hover,
@@ -82,46 +105,213 @@ td > * {
   border-color: var(--link-hover-color);
 }
 
+.drop-zone:has(#drop-zone-attached[style*="block"]) {
+  border: 1px solid rgb(220, 215, 235);
+  background-color: white;
+  padding: 6px 10px;
+}
+
+.attached-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px;
+  gap: 10px;
+}
+
+.attached-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.attached-name {
+  font-size: var(--font-reg);
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.attached-size {
+  font-size: 1.2rem;
+  color: var(--secondary);
+}
+
+.preview-player {
+  width: 100%;
+  height: 36px;
+  margin-top: 6px;
+}
+
+.url-attached {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgb(220, 215, 235);
+  border-radius: 8px;
+  background: var(--button-bg);
+  margin-top: 10px;
+}
+
+.url-attached audio {
+  flex: 1;
+  height: 36px;
+}
+
+.feedback-text {
+  font-size: 1.2rem;
+  color: var(--secondary);
+  margin-top: 4px;
+}
+
+.feedback-text.error {
+  color: var(--danger);
+}
+
 .record-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px;
+  padding: 20px 40px;
   gap: 14px;
+  text-align: center;
+
 }
 
 .record-btn {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  font-size: 2.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: var(--borders);
+  border: 1px solid rgb(200, 190, 230);
   background-color: var(--button-bg);
   cursor: pointer;
   padding: 0;
+  transition: all 0.15s ease;
+}
+
+.record-btn svg {
+  width: 28px;
+  height: 28px;
+  color: var(--link-hover-color);
 }
 
 .record-btn:hover {
   background-color: var(--button-bg-hover);
+  border-color: var(--link-hover-color);
 }
 
-.feedback-text {
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.form-group label {
   font-size: var(--font-reg);
   color: var(--secondary);
-  margin-top: 6px;
-  word-break: break-all;
+  font-weight: normal;
 }
 
-.btn {
-  align-self: flex-end;
-  margin-right: 40px;
+.form-group input[type="text"],
+.form-group input[type="url"],
+#url, #name {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: var(--font-reg);
+  border: 1px solid rgb(200, 190, 230);
+  border-radius: 8px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+  background: white;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+#url:focus,
+#name:focus {
+  border-color: var(--link-hover-color);
 }
 
 .form-divider {
   border: none;
-  border-top: 1px solid rgb(180, 160, 220);
-  margin: 10px 40px;
+  border-top: 1px solid rgb(220, 215, 235);
+  margin: 0;
+}
+
+.btn.submit {
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+  font-size: var(--font-reg);
+  border-radius: 8px;
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  border-spacing: 0 10px;
+}
+
+th {
+  text-align: left;
+  padding: 6px 20px 0 0;
+  font-weight: normal;
+  vertical-align: top;
+  font-size: var(--font-reg);
+  white-space: nowrap;
+  width: 1%;
+}
+
+td {
+  width: 100%;
+}
+
+td > * {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: var(--font-reg);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--secondary);
+  padding: 5px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.icon-btn.danger {
+  color: var(--danger);
+}
+
+.icon-btn.danger:hover {
+  background-color: rgb(250, 235, 235);
+}
+
+.icon-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.url-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.url-preview-row audio {
+  flex: 1;
+  height: 36px;
 }

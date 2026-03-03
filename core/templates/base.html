@@ -5,22 +5,36 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" type="image/png" href="" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56' fill='none'><defs><linearGradient id='rg' x1='0' y1='0' x2='56' y2='56' gradientUnits='userSpaceOnUse'><stop offset='0%25' stop-color='%237c6fad'/><stop offset='100%25' stop-color='%235eada8'/></linearGradient></defs><circle cx='28' cy='28' r='26' stroke='%23ddd8f0' stroke-width='1.2' opacity='0.5'/><circle cx='28' cy='28' r='20' stroke='%23b8b0da' stroke-width='1.5' opacity='0.65'/><circle cx='28' cy='28' r='14' stroke='%238c80be' stroke-width='2' opacity='0.85'/><circle cx='28' cy='28' r='8' stroke='url(%23rg)' stroke-width='2.5'/><circle cx='28' cy='28' r='3.5' fill='url(%23rg)'/></svg>" />
     <link rel="stylesheet" href="{% static 'css/base.css' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
     <title>Echo</title>
     {% block head %}
     {% endblock %}
   </head>
   <body>
     <header>
+      <div class="header-inner">
       <div class="header-logo-container">
-        <a href="/">
-          <img src="" alt="Echo Logo" />
-        </a>
-      </div>
+  <a href="/" class="echo-logo">
+    <svg width="28" height="28" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="echo-rg" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#7c6fad"/>
+          <stop offset="100%" stop-color="#5eada8"/>
+        </linearGradient>
+      </defs>
+      <circle cx="28" cy="28" r="26" stroke="#ddd8f0" stroke-width="1.2" opacity="0.5"/>
+      <circle cx="28" cy="28" r="20" stroke="#b8b0da" stroke-width="1.5" opacity="0.65"/>
+      <circle cx="28" cy="28" r="14" stroke="#8c80be" stroke-width="2" opacity="0.85"/>
+      <circle cx="28" cy="28" r="8" stroke="url(#echo-rg)" stroke-width="2.5"/>
+      <circle cx="28" cy="28" r="3.5" fill="url(#echo-rg)"/>
+    </svg>
+    <span class="echo-logo-text">Echo</span>
+  </a>
+</div>
       <nav>
         <ul>
             <li><a href="{% url 'sound-index' %}">Sounds</a></li>
@@ -30,6 +44,7 @@
           <li><a href="{% url 'about' %}">About</a></li>
         </ul>
       </nav>
+      </div>
     </header>
     <main>
       {% block content %}

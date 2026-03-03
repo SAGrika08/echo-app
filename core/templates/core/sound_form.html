@@ -4,73 +4,95 @@
 <link rel="stylesheet" href="{% static 'css/sounds/sound-form.css' %}" />
 {% endblock %}
 {% block content %}
-
 <div class="page-header">
   <h1>Add a Sound</h1>
 </div>
 <p class="page-content">Record, upload, or link a sound to add it to your library.</p>
 
 <div class="tab-container">
-  <button type="button" class="tab-btn active" onclick="showTab(event, 'upload')">⬆ Upload</button>
-  <button type="button" class="tab-btn" onclick="showTab(event, 'url')">🔗 URL</button>
-  <button type="button" class="tab-btn" onclick="showTab(event, 'record')">🎙 Record</button>
+  <button type="button" class="tab-btn active" onclick="showTab(event, 'upload')">
+    <i data-lucide="upload"></i> Upload
+  </button>
+  <button type="button" class="tab-btn" onclick="showTab(event, 'url')">
+    <i data-lucide="link"></i> URL
+  </button>
+  <button type="button" class="tab-btn" onclick="showTab(event, 'record')">
+    <i data-lucide="mic"></i> Record
+  </button>
 </div>
 
-<form action="" method="post" enctype="multipart/form-data" class="form-container">
+<form action="{% url 'sound-create' %}" method="post" enctype="multipart/form-data" class="form-container">
   {% csrf_token %}
   <input type="hidden" name="type" id="type-field" value="uploaded" />
 
-  <!-- Upload tab -->
   <div class="tab-content" id="tab-upload">
-    <table>
-      <tr>
-        <th>File</th>
-        <td>
-          <div class="drop-zone" id="drop-zone">
-            <p>Drag and drop your audio file here</p>
-            <small>Supports .mp3 .wav .ogg</small>
-            <br /><br />
-            <button type="button" class="btn secondary" onclick="document.getElementById('file').click()">
-              Choose File
+    <div class="form-group">
+      <label>Audio File</label>
+      <div class="drop-zone" id="drop-zone">
+        <div id="drop-zone-default">
+          <p>Drag and drop your audio file here</p>
+          <small>Supports .mp3 .wav .ogg · Max 10MB</small>
+          <br /><br />
+          <button type="button" class="btn secondary" onclick="document.getElementById('file').click()">
+            Choose File
+          </button>
+        </div>
+        <div id="drop-zone-attached" style="display:none;">
+          <div class="attached-file">
+            <div class="attached-info">
+              <span id="file-name" class="attached-name"></span>
+              <span id="file-size" class="attached-size"></span>
+            </div>
+            <button type="button" onclick="removeFile()" class="icon-btn danger">
+              <i data-lucide="x"></i>
             </button>
-            <input type="file" name="file" id="file" accept=".mp3,.wav,.ogg" style="display:none;" />
           </div>
-          <p id="file-name" class="feedback-text"></p>
-        </td>
-      </tr>
-    </table>
+        </div>
+        <input type="file" name="file" id="file" accept=".mp3,.wav,.ogg" style="display:none;" />
+      </div>
+      <p id="file-error" class="feedback-text error" style="display:none;">File too large. Maximum size is 10MB.</p>
+      <div id="file-preview-section" style="display:none;">
+        <audio id="file-preview" controls class="preview-player"></audio>
+      </div>
+    </div>
   </div>
 
-  <!-- URL tab -->
   <div class="tab-content" id="tab-url" style="display:none;">
-    <table>
-      <tr>
-        <th><label for="url">Audio URL</label></th>
-        <td>
-          <input type="url" name="url" id="url" placeholder="https://example.com/sound.mp3" />
-          <p id="url-display" class="feedback-text"></p>
-        </td>
-      </tr>
-    </table>
+    <div class="form-group">
+      <label for="url">Audio URL</label>
+      <input type="url" name="url" id="url" placeholder="https://example.com/sound.mp3" />
+      <p id="url-error" class="feedback-text error" style="display:none;">Please enter a valid audio URL.</p>
+      <div id="url-preview-section" style="display:none;">
+        <div class="url-preview-row">
+          <audio id="url-preview" controls class="preview-player"></audio>
+          <button type="button" onclick="removeUrl()" class="icon-btn danger">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Record tab -->
   <div class="tab-content" id="tab-record" style="display:none;">
-    <div class="record-container">
-      <button type="button" class="btn record-btn" id="record-btn">🎙</button>
-      <p class="feedback-text">Click the mic to start recording</p>
+    <div class="form-group">
+      <label>Recording</label>
+      <div class="record-container">
+        <button type="button" class="btn record-btn" id="record-btn">
+          <i data-lucide="mic"></i>
+        </button>
+        <p class="feedback-text">Click the mic to start recording.<br/>
+          Your voice becomes a sound in your library. Click again to stop and save.
+        </p>
+      </div>
     </div>
   </div>
 
   <hr class="form-divider" />
 
-  <!-- Name field always at the bottom -->
-  <table>
-    <tr>
-      <th><label for="name">Give it a name</label></th>
-      <td><input type="text" name="name" id="name" required /></td>
-    </tr>
-  </table>
+  <div class="form-group">
+    <label for="name">Give it a name</label>
+    <input type="text" name="name" id="name" placeholder="e.g. Rain on window, Coffee shop..."required />
+  </div>
 
   <button type="submit" class="btn submit">Save Sound</button>
 
@@ -85,32 +107,81 @@
     document.getElementById('type-field').value = tab === 'upload' ? 'uploaded' : tab;
   }
 
+  const MAX_SIZE_MB = 10;
+
   document.getElementById('file').addEventListener('change', function () {
-    document.getElementById('file-name').textContent = '📎 ' + this.files[0].name;
+    const file = this.files[0];
+    if (!file) return;
+    const sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > MAX_SIZE_MB) {
+      document.getElementById('file-error').style.display = 'block';
+      this.value = '';
+      return;
+    }
+    document.getElementById('file-error').style.display = 'none';
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-size').textContent = sizeMB.toFixed(1) + ' MB';
+    document.getElementById('drop-zone-default').style.display = 'none';
+    document.getElementById('drop-zone-attached').style.display = 'block';
+    const preview = document.getElementById('file-preview');
+    preview.src = URL.createObjectURL(file);
+    document.getElementById('file-preview-section').style.display = 'block';
   });
+
+  function removeFile() {
+    document.getElementById('file').value = '';
+    document.getElementById('file-name').textContent = '';
+    document.getElementById('file-size').textContent = '';
+    document.getElementById('drop-zone-default').style.display = 'block';
+    document.getElementById('drop-zone-attached').style.display = 'none';
+    document.getElementById('file-preview-section').style.display = 'none';
+    document.getElementById('file-preview').src = '';
+  }
 
   document.getElementById('url').addEventListener('input', function () {
-    const display = document.getElementById('url-display');
-    display.textContent = this.value ? '🔗 ' + this.value : '';
+    const val = this.value.trim();
+    const section = document.getElementById('url-preview-section');
+    const preview = document.getElementById('url-preview');
+    if (val) {
+      preview.src = val;
+      section.style.display = 'block';
+    } else {
+      section.style.display = 'none';
+      preview.src = '';
+    }
   });
 
-  const dropZone = document.querySelector('.drop-zone');
+  function removeUrl() {
+    document.getElementById('url').value = '';
+    document.getElementById('url-preview-section').style.display = 'none';
+    document.getElementById('url-preview').src = '';
+  }
 
+  const dropZone = document.querySelector('.drop-zone');
   dropZone.addEventListener('dragover', function (e) {
     e.preventDefault();
     this.classList.add('drag-over');
   });
-
   dropZone.addEventListener('dragleave', function () {
     this.classList.remove('drag-over');
   });
-
   dropZone.addEventListener('drop', function (e) {
     e.preventDefault();
     this.classList.remove('drag-over');
     const file = e.dataTransfer.files[0];
+    const sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > MAX_SIZE_MB) {
+      document.getElementById('file-error').style.display = 'block';
+      return;
+    }
     document.getElementById('file').files = e.dataTransfer.files;
-    document.getElementById('file-name').textContent = '📎 ' + file.name;
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-size').textContent = sizeMB.toFixed(1) + ' MB';
+    document.getElementById('drop-zone-default').style.display = 'none';
+    document.getElementById('drop-zone-attached').style.display = 'block';
+    const preview = document.getElementById('file-preview');
+    preview.src = URL.createObjectURL(file);
+    document.getElementById('file-preview-section').style.display = 'block';
   });
 </script>
 

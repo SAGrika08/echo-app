@@ -8,11 +8,12 @@
 .card-container {
   padding: 20px 30px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-start;
   flex-wrap: wrap;
   width: 100%;
   box-sizing: border-box;
+  gap: 0;
 }
 
 

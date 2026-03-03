@@ -5,16 +5,34 @@
 {% endblock %}
 {% block content %}
 
-<section class="logo-container">
-  <div class="logo-img-container">
-    <img src="" alt="Echo Logo" />
+<section class="hero">
+
+  <div class="hero-mark">
+    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="hero-ripple">
+      <defs>
+        <linearGradient id="hero-rg" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#7c6fad"/>
+          <stop offset="100%" stop-color="#5eada8"/>
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="100" r="94" stroke="#ddd8f0" stroke-width="2" opacity="0.35"/>
+      <circle cx="100" cy="100" r="76" stroke="#c8bfe8" stroke-width="2.5" opacity="0.5"/>
+      <circle cx="100" cy="100" r="58" stroke="#a99fd4" stroke-width="3" opacity="0.65"/>
+      <circle cx="100" cy="100" r="40" stroke="#8c80be" stroke-width="3.5" opacity="0.8"/>
+      <circle cx="100" cy="100" r="22" stroke="url(#hero-rg)" stroke-width="4"/>
+      <circle cx="100" cy="100" r="8" fill="url(#hero-rg)"/>
+    </svg>
   </div>
-  <div class="logo-text-container">
-    <h1>Echo</h1>
-    <p>Constructed atmospheres.</p>
-    <a class="btn submit" href="/accounts/signup">Sign Up</a>
-    <a class="btn secondary" href="/accounts/login">Log In</a>
+
+  <div class="hero-content">
+    <h1 class="hero-title">Echo</h1>
+    <p class="hero-tagline">Constructed atmospheres.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/accounts/signup">Sign Up</a>
+      <a class="btn btn-secondary" href="/accounts/login">Log In</a>
+    </div>
   </div>
+
 </section>
 
 {% endblock %}
