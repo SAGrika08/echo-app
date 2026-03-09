@@ -82,56 +82,50 @@ class SceneDelete(LoginRequiredMixin, DeleteView):
 class MixerView(LoginRequiredMixin, View):
 
     def get(self, request):
-        sounds = Sound.objects.all()
-        return render(request, 'scenes/mixer.html', {'sounds': sounds})
+        sounds = Sound.objects.filter(user=request.user)
+        context = {'sounds': sounds}
+
+        scene_id = request.GET.get('scene')
+        if scene_id:
+            try:
+                scene = Scene.objects.get(id=scene_id, user=request.user)
+                context['edit_scene'] = scene
+                context['edit_sounds'] = list(scene.scenesound_set.values('sound_id', 'level'))
+            except Scene.DoesNotExist:
+                pass
+
+        return render(request, 'scenes/mixer.html', context)
 
     def post(self, request):
         name = request.POST.get('name')
         is_public = request.POST.get('is_public') == 'on'
+        scene_id = request.POST.get('scene_id')
 
-        scene = Scene.objects.create(
-            name=name,
-            is_public=is_public,
-            user=request.user
-        )
+        if scene_id:
+            scene = Scene.objects.get(id=scene_id, user=request.user)
+            scene.name = name
+            scene.is_public = is_public
+            scene.save()
+            scene.scenesound_set.all().delete()
+        else:
+            scene = Scene.objects.create(name=name, is_public=is_public, user=request.user)
 
-        selected_sounds = request.POST.getlist('sounds')
-
-        for sound_id in selected_sounds:
+        for sound_id in request.POST.getlist('sounds'):
             level = request.POST.get(f'level_{sound_id}', 50)
-            SceneSound.objects.create(
-                scene=scene,
-                sound_id=sound_id,
-                level=int(level)
-            )
+            SceneSound.objects.create(scene=scene, sound_id=sound_id, level=int(level))
 
         return redirect('scene-detail', pk=scene.id)
 
-@login_required
-def add_sound_to_scene(request, scene_id):
-    if request.method == 'POST':
-        sound_id = request.POST.get('sound_id')
-        level = request.POST.get('level', 50)
-        SceneSound.objects.create(scene_id=scene_id, sound_id=sound_id, level=int(level))
-    return redirect('scene-detail', pk=scene_id)
 
-@login_required
-def remove_sound_from_scene(request, scene_id, sound_id):
-    if request.method == 'POST':
-        SceneSound.objects.filter(scene_id=scene_id, sound_id=sound_id).delete()
-    return redirect('scene-detail', pk=scene_id)        
+class ExploreView(ListView):
+    model = Scene
+    template_name = 'scenes/explore.html'
+    context_object_name = 'scene_list'
 
-@login_required
-def update_sound_level_in_scene(request, scene_id, sound_id):
-    if request.method == 'POST':
-        level = request.POST.get('level', 50)
-        scene_sound = SceneSound.objects.filter(scene_id=scene_id, sound_id=sound_id).first()
-        if scene_sound:
-            scene_sound.level = int(level)
-            scene_sound.save()
-    return redirect('scene-detail', pk=scene_id)
+    def get_queryset(self):
+        return Scene.objects.filter(is_public=True).order_by('-created_at')
 
-@login_required
+
 def signup(request):
     error_message = ''
     if request.method == 'POST':

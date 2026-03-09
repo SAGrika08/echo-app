@@ -6,100 +6,218 @@
 {% block content %}
 
 <section class="page-header">
-  <h1>Mixer</h1>
+  <h1>{% if edit_scene %}Edit Scene{% else %}Mixer{% endif %}</h1>
 </section>
-<p class="page-content">Toggle sounds to add to your mix, set the volume, then save as a scene.</p>
+<p class="mixer-subtitle">{% if edit_scene %}Editing "{{ edit_scene.name }}"  adjust your tracks and save.{% else %}Pick your sounds, layer the volumes, and save your atmosphere as a scene.{% endif %}</p>
 
-<form method="POST" action="{% url 'mixer' %}" class="mixer-layout">
+<form method="POST" action="{% url 'mixer' %}" id="mixer-form">
   {% csrf_token %}
-
+{% if edit_scene %}
+  <input type="hidden" name="scene_id" value="{{ edit_scene.id }}">
+{% endif %}
   <div class="mixer-panel">
+    <div class="panel-header">
+      <span class="panel-hint">Toggle sounds to add to your mix</span>
+      <span class="active-count" id="active-count">0 active</span>
+    </div>
+
     {% for sound in sounds %}
-    <div class="mixer-track" id="track-{{ sound.id }}">
 
-      <input
-        type="checkbox"
-        name="sounds"
-        value="{{ sound.id }}"
-        id="check-{{ sound.id }}"
-        style="display:none;"
-        onchange="toggleTrack({{ sound.id }})"
-      />
+    {% if sound.file %}
+      <audio id="audio-{{ sound.id }}" src="{{ sound.file.url }}" loop></audio>
+    {% elif sound.url %}
+      <audio id="audio-{{ sound.id }}" src="{{ sound.url }}" loop></audio>
+    {% endif %}
 
-      <div class="toggle" id="toggle-{{ sound.id }}" data-id="{{ sound.id }}" onclick="clickToggle(this.dataset.id)">
+    <input type="checkbox" name="sounds" value="{{ sound.id }}"
+      id="check-{{ sound.id }}" style="display:none;">
+    <input type="range" name="level_{{ sound.id }}" id="level-{{ sound.id }}"
+      min="0" max="100" value="50" style="display:none;">
+
+    <div class="mixer-track inactive" id="track-{{ sound.id }}" data-id="{{ sound.id }}" data-active="false">
+
+      <div class="vinyl-mini" id="vinyl-{{ sound.id }}">
+        <div class="vinyl-centre"></div>
+        <div class="vinyl-hole"></div>
+      </div>
+
+      <button type="button" class="toggle" id="toggle-{{ sound.id }}"
+        onclick="clickToggle('{{ sound.id }}')">
         <div class="toggle-dot"></div>
+      </button>
+
+      <span class="track-name">{{ sound.name }}</span>
+
+      <div class="fader-wrap" id="fw-{{ sound.id }}">
+        <div class="fader-ticks">
+          <div class="tick major"></div><div class="tick"></div><div class="tick"></div>
+          <div class="tick major"></div><div class="tick"></div><div class="tick"></div>
+          <div class="tick major"></div><div class="tick"></div><div class="tick"></div>
+          <div class="tick major"></div><div class="tick"></div><div class="tick"></div>
+          <div class="tick major"></div>
+        </div>
+        <div class="fader-groove">
+          <div class="fader-fill" id="ff-{{ sound.id }}" style="width:50%"></div>
+        </div>
+        <div class="fader-cap" id="fc-{{ sound.id }}"></div>
+        <input type="range" class="fader-input" min="0" max="100" value="50"
+          id="fi-{{ sound.id }}"
+          oninput="updateFader('{{ sound.id }}', this.value)"
+          disabled>
       </div>
 
-      <div class="track-label">{{ sound.name }}</div>
-      <span class="badge {{ sound.type }}">{{ sound.get_type_display }}</span>
-
-      <div class="slider-wrap">
-        <input
-          type="range"
-          name="level_{{ sound.id }}"
-          id="slider-{{ sound.id }}"
-          min="0"
-          max="100"
-          value="50"
-          class="slider-input"
-          data-id="{{ sound.id }}"
-          oninput="updateLabel(this.dataset.id, this.value)"
-        />
-        <span class="vol-pct" id="vol-{{ sound.id }}">50%</span>
-      </div>
+      <span class="vol-display" id="vol-{{ sound.id }}">—</span>
 
     </div>
+    {% empty %}
+    <p class="empty-state">No sounds yet. <a href="{% url 'sound-create' %}">Add your first sound →</a></p>
     {% endfor %}
   </div>
 
   <div class="save-panel">
-    <h2 class="save-title">Save as Scene</h2>
+    <h2 class="save-title">{% if edit_scene %}Update Scene{% else %}Save as Scene{% endif %}</h2>
 
     <div class="form-field">
       <label for="name">Scene Name</label>
-      <input type="text" name="name" id="name" placeholder="e.g. 3am writing mode..." required />
+      <input type="text" name="name" id="name"
+  placeholder="e.g. 3am writing mode..." required
+  value="{% if edit_scene %}{{ edit_scene.name }}{% endif %}" />
     </div>
 
     <div class="form-field">
       <label>Visibility</label>
-      <div class="vis-row">
-        <label class="vis-opt">
-          <input type="checkbox" name="is_public" id="is_public" />
-          Make Public
-        </label>
+      <div class="vis-tabs">
+        <button type="button" class="vis-tab active" id="btn-private"
+          onclick="setVisibility('private')">🔒 Private</button>
+        <button type="button" class="vis-tab" id="btn-public"
+          onclick="setVisibility('public')">🌍 Public</button>
       </div>
-      <p class="feedback-text">Leave unchecked to keep private.</p>
+      <input type="hidden" name="is_public" id="is_public" value="">
+      <p class="hint-text" id="vis-hint">Only you can see and play this scene.</p>
     </div>
 
-    <button type="submit" class="btn submit">Save Scene</button>
-    <p class="feedback-text">Redirects to your scene after saving.</p>
+    <div class="save-action">
+      <button type="submit" class="btn submit">{% if edit_scene %}Update Scene →{% else %}Save Scene →{% endif %}</button>
+      <p class="hint-text">Your scene will appear in My Scenes once saved.</p>
+    </div>
   </div>
 
 </form>
 
 <script>
-  function clickToggle(id) {
-    const checkbox = document.getElementById('check-' + id);
-    checkbox.checked = !checkbox.checked;
-    toggleTrack(id);
+  const CAP_W = 18;
+
+  function toAudioVol(v) { return Math.pow(v / 100, 2); }
+
+  function positionCap(id, value) {
+    value = parseInt(value);
+    document.getElementById('ff-' + id).style.width = value + '%';
+    document.getElementById('level-' + id).value = value;
+    const wrap = document.getElementById('fw-' + id);
+    const grooveW = wrap.querySelector('.fader-groove').offsetWidth;
+    document.getElementById('fc-' + id).style.left =
+      ((value / 100) * (grooveW - CAP_W)) + 'px';
   }
 
-  function toggleTrack(id) {
+
+  function updateFader(id, value) {
+    value = parseInt(value);
+    positionCap(id, value);
+    document.getElementById('vol-' + id).textContent = value;
+    const audio = document.getElementById('audio-' + id);
+    if (audio) audio.volume = toAudioVol(value);
+  }
+
+  
+  document.querySelectorAll('.mixer-track').forEach(track => {
+    const id = track.dataset.id;
+    const val = document.getElementById('fi-' + id).value;
+    positionCap(id, val);
+    if (track.dataset.active === 'true') {
+      document.getElementById('vol-' + id).textContent = parseInt(val);
+      const audio = document.getElementById('audio-' + id);
+      if (audio) audio.volume = toAudioVol(parseInt(val));
+    } else {
+      document.getElementById('vol-' + id).textContent = '';
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.mixer-track').forEach(track => {
+      positionCap(track.dataset.id,
+        document.getElementById('fi-' + track.dataset.id).value);
+    });
+  });
+
+  function clickToggle(id) {
     const track = document.getElementById('track-' + id);
     const toggle = document.getElementById('toggle-' + id);
-    const checked = document.getElementById('check-' + id).checked;
-    if (checked) {
-      track.classList.add('active');
-      toggle.classList.add('on');
-    } else {
-      track.classList.remove('active');
+    const checkbox = document.getElementById('check-' + id);
+    const faderInput = document.getElementById('fi-' + id);
+    const volDisplay = document.getElementById('vol-' + id);
+    const audio = document.getElementById('audio-' + id);
+    const isActive = track.dataset.active === 'true';
+
+    if (isActive) {
+      track.classList.add('inactive');
       toggle.classList.remove('on');
+      checkbox.checked = false;
+      faderInput.disabled = true;
+      volDisplay.textContent = '';
+      track.dataset.active = 'false';
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+    } else {
+      track.classList.remove('inactive');
+      toggle.classList.add('on');
+      checkbox.checked = true;
+      faderInput.disabled = false;
+      track.dataset.active = 'true';
+      updateFader(id, faderInput.value);
+      if (audio) {
+        audio.volume = toAudioVol(parseInt(faderInput.value));
+        audio.play().catch(() => {});
+      }
     }
+
+    const active = document.querySelectorAll('.mixer-track:not(.inactive)').length;
+    document.getElementById('active-count').textContent = active + ' active';
   }
 
-  function updateLabel(id, value) {
-    document.getElementById('vol-' + id).textContent = value + '%';
+  function setVisibility(val) {
+    const isPublic = val === 'public';
+    document.getElementById('is_public').value = isPublic ? 'on' : '';
+    document.getElementById('btn-private').classList.toggle('active', !isPublic);
+    document.getElementById('btn-public').classList.toggle('active', isPublic);
+    document.getElementById('vis-hint').textContent = isPublic
+      ? 'Anyone can find and listen to this scene.'
+      : 'Only you can see and play this scene.';
   }
+
+  {% if edit_sounds %}
+  const editSounds = {{ edit_sounds|safe }};
+  editSounds.forEach(s => {
+    const id = s.sound_id;
+    const level = s.level;
+    const track = document.getElementById('track-' + id);
+    if (!track) return;
+    const faderInput = document.getElementById('fi-' + id);
+    faderInput.value = level;
+    track.classList.remove('inactive');
+    document.getElementById('toggle-' + id).classList.add('on');
+    document.getElementById('check-' + id).checked = true;
+    faderInput.disabled = false;
+    track.dataset.active = 'true';
+    updateFader(id, level);
+  });
+  const active = document.querySelectorAll('.mixer-track:not(.inactive)').length;
+  document.getElementById('active-count').textContent = active + ' active';
+  {% if edit_scene.is_public %}
+    setVisibility('public');
+  {% else %}
+    setVisibility('private');
+  {% endif %}
+{% endif %}
+
 </script>
 
 {% endblock %}

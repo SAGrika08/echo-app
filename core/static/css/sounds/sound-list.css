@@ -1,3 +1,19 @@
+.page-header {
+  padding: 20px 30px;
+}
+
+.page-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;    
+}
+
+.page-subtitle {
+  font-size: var(--font-reg);
+  color: var(--secondary);
+  margin: 0 0 0 30px;
+  padding-bottom: 8px;
+}
 
 .page-header .btn.submit:hover {
   background-color: var(--submit);
@@ -286,6 +302,21 @@
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
+}
+
+.card-container .empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--secondary);
+  font-size: var(--font-reg);
+  padding: 60px 0;
+  width: 100%;
+}
+
+.empty-state a {
+  color: #5eada8;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 @media only screen and (max-width: 768px) {

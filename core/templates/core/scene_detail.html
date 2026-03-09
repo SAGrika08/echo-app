@@ -5,141 +5,126 @@
 {% endblock %}
 {% block content %}
 
-<div class="back-link">
-  <a class="btn secondary" href="{% url 'scene-index' %}">Back to Scenes</a>
-</div>
+<section class="page-header">
+  <div class="page-header-left">
+    <a class="back-link" href="{% url 'scene-index' %}">← Back to Scenes</a>
 
-<div class="detail-layout">
-
-  <div class="detail-panel">
-
-    <div class="detail-head">
-      <div>
-        <h1 class="detail-title" id="title-{{ scene.id }}">{{ scene.name }}</h1>
-
-        <form method="POST" action="{% url 'scene-update' scene.id %}">
-          {% csrf_token %}
-          <input
-            type="text"
-            name="name"
-            value="{{ scene.name }}"
-            id="input-{{ scene.id }}"
-            class="edit-input"
-            style="display:none;"
-          />
-          <button type="submit" class="btn secondary" id="save-{{ scene.id }}" style="display:none;">Save</button>
-          <button type="button" class="btn secondary" id="cancel-{{ scene.id }}" style="display:none;" data-id="{{ scene.id }}" onclick="cancelEdit(this.dataset.id)">Cancel</button>
-        </form>
-
-        <div class="detail-meta">
-          {% if scene.is_public %}
-            <span class="pill public">Public</span>
-          {% else %}
-            <span class="pill private">Private</span>
-          {% endif %}
-          {{ scene.sounds.count }} track{{ scene.sounds.count|pluralize }}
-          &nbsp;·&nbsp; Created {{ scene.created_at|date:"M d, Y" }}
-          &nbsp;·&nbsp; Updated {{ scene.updated_at|date:"M d, Y" }}
-        </div>
-      </div>
-
-      <div class="detail-head-actions">
-        <button type="button" class="btn secondary" data-id="{{ scene.id }}" onclick="toggleEdit(this.dataset.id)">Rename</button>
-        <button type="button" class="btn danger" data-id="{{ scene.id }}" data-name="{{ scene.name }}" onclick="showOverlay(this.dataset.id, this.dataset.name)">Delete</button>
+    <div class="title-row" id="title-row-{{ scene.id }}">
+      <h1 class="detail-title" id="title-{{ scene.id }}">{{ scene.name }}</h1>
+      <div class="title-actions">
+        <button type="button" class="icon-btn" title="Rename"
+          onclick="toggleEdit('{{ scene.id }}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button type="button" class="icon-btn danger" title="Delete"
+          data-id="{{ scene.id }}" data-name="{{ scene.name }}"
+          onclick="showOverlay(this.dataset.id, this.dataset.name)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+        </button>
       </div>
     </div>
 
-    <h2 class="section-title">Tracks</h2>
-
-    {% for scene_sound in scene_sounds %}
-    <div class="track-row">
-      <div class="track-info">
-        <p class="track-name">{{ scene_sound.sound.name }}</p>
-        <p class="track-type {{ scene_sound.sound.type }}">{{ scene_sound.sound.get_type_display }}</p>
-      </div>
-
-      <form method="POST" action="{% url 'update-sound-level-in-scene' scene.id scene_sound.sound.id %}">
-        {% csrf_token %}
-        <div class="slider-wrap">
-          <input
-            type="range"
-            name="level"
-            min="0"
-            max="100"
-            value="{{ scene_sound.level }}"
-            class="slider-input"
-            data-id="{{ scene_sound.sound.id }}"
-            oninput="updateLabel(this.dataset.id, this.value)"
-          />
-          <span class="vol-pct" id="vol-{{ scene_sound.sound.id }}">{{ scene_sound.level }}%</span>
-          <button type="submit" class="btn secondary">Save</button>
-        </div>
-      </form>
-
-      <form method="POST" action="{% url 'remove-sound-from-scene' scene.id scene_sound.sound.id %}">
-        {% csrf_token %}
-        <button type="submit" class="btn danger">Remove</button>
-      </form>
-    </div>
-    {% endfor %}
-
-    <h2 class="section-title">Add a Sound</h2>
-
-    {% for sound in sounds_not_in_scene %}
-    <form method="POST" action="{% url 'add-sound-to-scene' scene.id %}">
+    <form method="POST" action="{% url 'scene-update' scene.id %}"
+      class="rename-form" id="rename-form-{{ scene.id }}" style="display:none;">
       {% csrf_token %}
-      <input type="hidden" name="sound_id" value="{{ sound.id }}" />
-      <div class="add-track-row">
-        <p class="track-name">{{ sound.name }}</p>
-        <p class="track-type {{ sound.type }}">{{ sound.get_type_display }}</p>
-        <input type="number" name="level" value="50" min="0" max="100" class="level-input" />
-        <button type="submit" class="btn submit">Add</button>
-      </div>
+      <input type="text" name="name" value="{{ scene.name }}"
+        id="input-{{ scene.id }}" class="rename-input" />
+      <button type="submit" class="icon-btn confirm" title="Save">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </button>
+      <button type="button" class="icon-btn" title="Cancel"
+        onclick="cancelEdit('{{ scene.id }}')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </form>
-    {% endfor %}
 
+    <div class="detail-meta">
+      {% if scene.is_public %}
+        <span class="pill public">Public</span>
+      {% else %}
+        <span class="pill private">Private</span>
+      {% endif %}
+      <span class="meta-dot">·</span>
+      <span>{{ scene.sounds.count }} track{{ scene.sounds.count|pluralize }}</span>
+      <span class="meta-dot">·</span>
+      <span>{{ scene.created_at|date:"M d, Y" }}</span>
+    </div>
   </div>
 
-  <div class="side-panel">
+  <div class="page-header-actions">
+    <a class="btn secondary" href="{% url 'mixer' %}?scene={{ scene.id }}">Edit in Mixer</a>
+  </div>
+</section>
 
-    <div class="side-card">
-      <h2 class="side-title">Actions</h2>
-      <a class="btn submit" href="#">Play Scene</a>
-      <a class="btn secondary" href="{% url 'mixer' %}">Edit in Mixer</a>
+{% for scene_sound in scene_sounds %}
+  {% if scene_sound.sound.file %}
+    <audio id="audio-{{ scene_sound.sound.id }}"
+      src="{{ scene_sound.sound.file.url }}" loop></audio>
+  {% elif scene_sound.sound.url %}
+    <audio id="audio-{{ scene_sound.sound.id }}"
+      src="{{ scene_sound.sound.url }}" loop></audio>
+  {% endif %}
+{% endfor %}
 
-      <form method="POST" action="{% url 'scene-update' scene.id %}">
-        {% csrf_token %}
-        <input type="hidden" name="name" value="{{ scene.name }}" />
-        {% if scene.is_public %}
-          <input type="hidden" name="is_public" value="" />
-          <button type="submit" class="btn secondary">Make Private</button>
-        {% else %}
-          <input type="hidden" name="is_public" value="on" />
-          <button type="submit" class="btn secondary">Make Public</button>
-        {% endif %}
-      </form>
-    </div>
+<div class="scene-card">
 
-    <div class="side-card">
-      <h2 class="side-title">Scene Info</h2>
-      <div class="info-row">
-        <span>Tracks</span>
-        <span class="info-val">{{ scene.sounds.count }}</span>
-      </div>
-      <div class="info-row">
-        <span>Visibility</span>
-        <span class="info-val">{% if scene.is_public %}Public{% else %}Private{% endif %}</span>
-      </div>
-      <div class="info-row">
-        <span>Created</span>
-        <span class="info-val">{{ scene.created_at|date:"M d, Y" }}</span>
-      </div>
-      <div class="info-row">
-        <span>Updated</span>
-        <span class="info-val">{{ scene.updated_at|date:"M d, Y" }}</span>
+  <div class="vinyl-col">
+    <div class="vinyl-lg" id="vinyl-lg">
+      <div class="vinyl-label">
+        <div class="vinyl-hole"></div>
       </div>
     </div>
+    <button type="button" class="play-btn" id="play-btn" onclick="togglePlay()">
+      <span id="play-label">▶ Play</span>
+    </button>
+  </div>
 
+  <div class="tracks-col">
+    <div class="tracks-header">
+      <span class="tracks-hint">Tracks</span>
+      <span class="track-count">{{ scene.sounds.count }} track{{ scene.sounds.count|pluralize }}</span>
+    </div>
+
+    {% for scene_sound in scene_sounds %}
+    <div class="track-row" data-id="{{ scene_sound.sound.id }}" data-level="{{ scene_sound.level }}">
+      <div class="vinyl-mini" id="vinyl-{{ scene_sound.sound.id }}">
+        <div class="vinyl-centre"></div>
+        <div class="vinyl-hole-sm"></div>
+      </div>
+
+      <span class="track-name">{{ scene_sound.sound.name }}</span>
+
+      <div class="fader-wrap" id="fw-{{ scene_sound.sound.id }}">
+        <div class="fader-ticks">
+          <div class="tick major"></div><div class="tick"></div><div class="tick"></div>
+          <div class="tick major"></div><div class="tick"></div><div class="tick"></div>
+          <div class="tick major"></div><div class="tick"></div><div class="tick"></div>
+          <div class="tick major"></div><div class="tick"></div><div class="tick"></div>
+          <div class="tick major"></div>
+        </div>
+        <div class="fader-groove">
+          <div class="fader-fill" style="width: {{ scene_sound.level }}%"></div>
+        </div>
+        <div class="fader-cap" id="fc-{{ scene_sound.sound.id }}"></div>
+      </div>
+
+      <span class="level-val">{{ scene_sound.level }}</span>
+    </div>
+    {% empty %}
+    <p class="empty-state">No tracks yet. <a href="{% url 'mixer' %}">Open in Mixer →</a></p>
+    {% endfor %}
   </div>
 
 </div>
@@ -153,34 +138,50 @@
       {% csrf_token %}
       <div class="overlay-actions">
         <button type="button" class="btn secondary" onclick="hideOverlay()">Cancel</button>
-        <button type="submit" class="btn danger">Yes, Delete</button>
+        <button type="submit" class="btn delete-confirm">Yes, Delete</button>
       </div>
     </form>
   </div>
 </div>
 
 <script>
+  const CAP_W = 18;
+
+  document.querySelectorAll('.track-row[data-id]').forEach(row => {
+    const id = row.dataset.id;
+    const level = parseInt(row.dataset.level);
+    const wrap = document.getElementById('fw-' + id);
+    const grooveW = wrap.querySelector('.fader-groove').offsetWidth;
+    document.getElementById('fc-' + id).style.left =
+      ((level / 100) * (grooveW - CAP_W)) + 'px';
+  });
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.track-row[data-id]').forEach(row => {
+      const id = row.dataset.id;
+      const level = parseInt(row.dataset.level);
+      const wrap = document.getElementById('fw-' + id);
+      const grooveW = wrap.querySelector('.fader-groove').offsetWidth;
+      document.getElementById('fc-' + id).style.left =
+        ((level / 100) * (grooveW - CAP_W)) + 'px';
+    });
+  });
+
   function toggleEdit(id) {
-    document.getElementById('title-' + id).style.display = 'none';
-    document.getElementById('input-' + id).style.display = 'block';
-    document.getElementById('save-' + id).style.display = 'inline-block';
-    document.getElementById('cancel-' + id).style.display = 'inline-block';
-    document.getElementById('input-' + id).focus();
-  }
+  document.getElementById('title-row-' + id).style.display = 'none';
+  document.getElementById('rename-form-' + id).style.display = 'flex';
+  document.getElementById('input-' + id).focus();
+}
 
-  function cancelEdit(id) {
-    document.getElementById('title-' + id).style.display = 'block';
-    document.getElementById('input-' + id).style.display = 'none';
-    document.getElementById('save-' + id).style.display = 'none';
-    document.getElementById('cancel-' + id).style.display = 'none';
-  }
+function cancelEdit(id) {
+  document.getElementById('title-row-' + id).style.display = 'flex';
+  document.getElementById('rename-form-' + id).style.display = 'none';
+}
 
-  function updateLabel(id, value) {
-    document.getElementById('vol-' + id).textContent = value + '%';
-  }
-
+  
   function showOverlay(id, name) {
-    document.getElementById('overlay-name').textContent = 'Are you sure you want to delete ' + name + '?';
+    document.getElementById('overlay-name').textContent =
+      'Are you sure you want to delete "' + name + '"?';
     document.getElementById('delete-form').action = '/scenes/' + id + '/delete/';
     document.getElementById('delete-overlay').style.display = 'flex';
   }
@@ -188,6 +189,45 @@
   function hideOverlay() {
     document.getElementById('delete-overlay').style.display = 'none';
   }
+
+  function toAudioVol(v) { return Math.pow(v / 100, 2); }
+
+  const tracks = Array.from(document.querySelectorAll('.track-row[data-id]'));
+  let isPlaying = false;
+
+  function togglePlay() {
+    isPlaying ? stopScene() : playScene();
+  }
+
+  function playScene() {
+    tracks.forEach(row => {
+      const audio = document.getElementById('audio-' + row.dataset.id);
+      if (audio) {
+        audio.volume = toAudioVol(parseInt(row.dataset.level));
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+      }
+      document.getElementById('vinyl-' + row.dataset.id).classList.add('spinning');
+    });
+    document.getElementById('vinyl-lg').classList.add('spinning');
+    isPlaying = true;
+    document.getElementById('play-label').textContent = '⏹ Stop';
+    document.getElementById('play-btn').classList.add('playing');
+  }
+
+  function stopScene() {
+    tracks.forEach(row => {
+      const audio = document.getElementById('audio-' + row.dataset.id);
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+      document.getElementById('vinyl-' + row.dataset.id).classList.remove('spinning');
+    });
+    document.getElementById('vinyl-lg').classList.remove('spinning');
+    isPlaying = false;
+    document.getElementById('play-label').textContent = '▶ Play';
+    document.getElementById('play-btn').classList.remove('playing');
+  }
+
+  window.addEventListener('beforeunload', stopScene);
 </script>
 
 {% endblock %}

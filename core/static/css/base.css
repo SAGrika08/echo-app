@@ -40,7 +40,6 @@ body {
   --content-max-width: 1300px;
 }
 
-/* ── Header ── */
 header {
   width: 100%;
   background: var(--nav-bg-ff);
@@ -136,7 +135,6 @@ nav li {
   background-clip: text;
 }
 
-/* ── Page layout ── */
 .page-header {
   display: flex;
   align-items: center;

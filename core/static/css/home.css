@@ -1,4 +1,4 @@
-/* static/css/home.css */
+
 
 main {
   display: flex;
@@ -21,7 +21,7 @@ main > section {
   display: none;
 }
 
-/* Hero */
+
 .hero {
   display: flex;
   flex-direction: column;
@@ -161,7 +161,7 @@ main > section {
   text-decoration: underline;
 }
 
-/* 768px */
+
 @media only screen and (min-width: 768px) {
   main {
     justify-content: space-around;
@@ -200,7 +200,7 @@ main > section {
   }
 }
 
-/* 1024px */
+
 @media only screen and (min-width: 1024px) {
   main {
     padding: 0 80px;
@@ -228,3 +228,14 @@ main > section {
   min-height: calc(100vh - 53px);
   justify-content: center;
 }
+
+.hero-ripple {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%   { opacity: 0.4; transform: scale(0.95); }
+  50%  { opacity: 1;   transform: scale(1.05); }
+  100% { opacity: 0.4; transform: scale(0.95); }
+}
+

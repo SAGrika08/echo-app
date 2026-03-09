@@ -9,9 +9,18 @@
   <h1>My Scenes</h1>
   <a class="btn submit" href="{% url 'mixer' %}">+ New Scene</a>
 </section>
+<p class="page-subtitle">Your personal collection of layered atmospheres.</p>
 
 <section class="scenes-list">
   {% for scene in scene_list %}
+
+  {% for ss in scene.scenesound_set.all %}
+  {% if ss.sound.file %}
+    <audio id="audio-{{ scene.id }}-{{ ss.sound.id }}" src="{{ ss.sound.file.url }}" loop></audio>
+  {% elif ss.sound.url %}
+    <audio id="audio-{{ scene.id }}-{{ ss.sound.id }}" src="{{ ss.sound.url }}" loop></audio>
+  {% endif %}
+  {% endfor %}
 
   <div class="scene-row">
 
@@ -33,9 +42,13 @@
     </a>
 
     <div class="scene-actions">
-      <button class="icon-btn play" type="button" title="Play">
-  <i data-lucide="volume-2"></i>
-</button>
+      <button class="icon-btn play" type="button" title="Play"
+        id="play-btn-{{ scene.id }}"
+        data-scene="{{ scene.id }}"
+        data-sounds='[{% for ss in scene.scenesound_set.all %}{"id":"{{ ss.sound.id }}","level":{{ ss.level }}}{% if not forloop.last %},{% endif %}{% endfor %}]'
+        onclick="togglePlay(this)">
+        <i data-lucide="volume-2"></i>
+      </button>
 
       <button
         class="icon-btn danger"
@@ -76,9 +89,59 @@
     document.getElementById('delete-form').action = '/scenes/' + id + '/delete/';
     document.getElementById('delete-overlay').style.display = 'flex';
   }
+
   function hideOverlay() {
     document.getElementById('delete-overlay').style.display = 'none';
   }
+
+  function toAudioVol(v) { return Math.pow(v / 100, 2); }
+
+  let currentlyPlaying = null;
+
+  function setIcon(btn, name) {
+    const svg = btn.querySelector('svg');
+    if (svg) svg.remove();
+    const icon = document.createElement('i');
+    icon.setAttribute('data-lucide', name);
+    btn.appendChild(icon);
+    lucide.createIcons({ nodes: [btn] });
+  }
+
+  function togglePlay(btn) {
+    const sceneId = btn.dataset.scene;
+    if (currentlyPlaying === sceneId) { stopScene(sceneId); return; }
+    if (currentlyPlaying) stopScene(currentlyPlaying);
+    const sounds = JSON.parse(btn.dataset.sounds);
+    sounds.forEach(s => {
+      const audio = document.getElementById('audio-' + sceneId + '-' + s.id);
+      if (audio) { audio.volume = toAudioVol(s.level); audio.currentTime = 0; audio.play().catch(() => {}); }
+    });
+    currentlyPlaying = sceneId;
+    btn.classList.add('playing');
+    setIcon(btn, 'pause');
+    const row = btn.closest('.scene-row');
+    if (row) row.querySelector('.scene-vinyl').classList.add('spinning');
+  }
+
+  function stopScene(sceneId) {
+    const btn = document.getElementById('play-btn-' + sceneId);
+    if (!btn) return;
+    const sounds = JSON.parse(btn.dataset.sounds);
+    sounds.forEach(s => {
+      const audio = document.getElementById('audio-' + sceneId + '-' + s.id);
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+    });
+    currentlyPlaying = null;
+    btn.classList.remove('playing');
+    setIcon(btn, 'volume-2');
+    // stop spinning
+    const row = btn.closest('.scene-row');
+    if (row) row.querySelector('.scene-vinyl').classList.remove('spinning');
+  }
+
+  window.addEventListener('beforeunload', () => {
+    if (currentlyPlaying) stopScene(currentlyPlaying);
+  });
 </script>
 
 {% endblock %}

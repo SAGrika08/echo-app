@@ -42,12 +42,14 @@
       <li><a href="{% url 'scene-index' %}">Scenes</a></li>
       <li><a href="{% url 'sound-create' %}">Add Sound</a></li>
       <li><a href="{% url 'mixer' %}">Mixer</a></li>
+      <li><a href="{% url 'explore' %}">Explore</a></li>
       <li><a href="{% url 'about' %}">About</a></li>
       <li><form id="logout-form" method="post" action="{% url 'logout' %}">
       {% csrf_token %}
       <button type="submit">Log out</button>
     </form></li>
     {% else %}
+      <li><a href="{% url 'explore' %}">Explore</a></li>
       <li><a href="{% url 'about' %}">About</a></li>
       <li><a href="{% url 'home' %}">Log In</a></li>
       <li><a href="{% url 'signup' %}">Sign Up</a></li>

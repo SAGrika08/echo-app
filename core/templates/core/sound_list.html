@@ -9,6 +9,7 @@
   <h1>My Sounds</h1>
   <a class="btn submit" href="{% url 'sound-create' %}">+ Add Sound</a>
 </section>
+<p class="page-subtitle">All your uploaded, recorded, and linked sounds in one place.</p>
 
 <section class="card-container">
   {% for sound in sound_list %}
@@ -70,7 +71,9 @@
 </div>
 
     </div>
-  </div>
+ </div>
+  {% empty %}
+  <p class="empty-state">No sounds yet. <a href="{% url 'sound-create' %}">Add your first sound →</a></p>
   {% endfor %}
 </section>
 

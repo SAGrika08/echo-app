@@ -1,4 +1,19 @@
+.page-header {
+  padding: 20px 30px;
+}
 
+.page-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;    
+}
+
+.page-subtitle {
+  font-size: var(--font-reg);
+  color: var(--secondary);
+  margin: 0 0 0 30px;
+  padding-bottom: 8px;
+}
 
 .scenes-list {
   display: grid;
@@ -149,6 +164,10 @@
   flex-shrink: 0;
 }
 
+.scene-vinyl.spinning {
+  animation-play-state: running;
+}
+
 .icon-btn {
   border: none;
   cursor: pointer;
@@ -168,8 +187,14 @@
 }
 
 .icon-btn.play:hover {
-  background: var(--submit);
+  background: linear-gradient(135deg, #7c6fad, #5eada8);
   color: white;
+}
+
+.icon-btn.play.playing {
+  background: linear-gradient(135deg, #7c6fad, #5eada8);
+  color: white;
+  border-color: transparent;
 }
 
 .icon-btn.danger {

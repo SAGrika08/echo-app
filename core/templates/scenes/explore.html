@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/scenes/explore.css' %}" />
+{% endblock %}
+{% block content %}
+
+<section class="page-header">
+    <div>
+  <h1>Explore</h1>
+  <p class="page-subtitle">Discover atmospheres created by the Echo community.</p>
+</div>
+</section>
+
+<section class="scenes-list">
+  {% for scene in scene_list %}
+
+  {% for ss in scene.scenesound_set.all %}
+    {% if ss.sound.file %}
+      <audio id="audio-{{ scene.id }}-{{ ss.sound.id }}" src="{{ ss.sound.file.url }}" loop></audio>
+    {% elif ss.sound.url %}
+      <audio id="audio-{{ scene.id }}-{{ ss.sound.id }}" src="{{ ss.sound.url }}" loop></audio>
+    {% endif %}
+  {% endfor %}
+
+  <div class="scene-row">
+
+    <div class="scene-vinyl public">
+      <div class="vinyl-hole"></div>
+    </div>
+
+    <div class="scene-info">
+      <h2 class="scene-name">{{ scene.name }}</h2>
+      <div class="scene-meta">
+        {{ scene.sounds.count }} track{{ scene.sounds.count|pluralize }}
+        &middot; {{ scene.created_at|date:"M d, Y" }}
+        &middot; <span class="vis-pill public">Public</span>
+      </div>
+    </div>
+
+    <div class="scene-actions">
+      <button class="icon-btn heart" type="button" title="Like">
+        <i data-lucide="heart"></i>
+      </button>
+      <button class="icon-btn play" type="button" title="Play"
+        id="play-btn-{{ scene.id }}"
+        data-scene="{{ scene.id }}"
+        data-sounds='[{% for ss in scene.scenesound_set.all %}{"id":"{{ ss.sound.id }}","level":{{ ss.level }}}{% if not forloop.last %},{% endif %}{% endfor %}]'
+        onclick="togglePlay(this)">
+        <i data-lucide="volume-2"></i>
+      </button>
+    </div>
+
+  </div>
+
+  {% empty %}
+  <p class="empty-state">No public scenes yet.</p>
+  {% endfor %}
+</section>
+
+{% if not user.is_authenticated %}
+<div class="explore-cta">
+  <p>Want to create your own scenes?</p>
+  <a class="btn submit" href="{% url 'signup' %}">Sign Up Free</a>
+</div>
+{% endif %}
+
+<script>
+  function toAudioVol(v) { return Math.pow(v / 100, 2); }
+
+  let currentlyPlaying = null;
+
+  function setIcon(btn, name) {
+    const svg = btn.querySelector('svg');
+    if (svg) svg.remove();
+    const icon = document.createElement('i');
+    icon.setAttribute('data-lucide', name);
+    btn.appendChild(icon);
+    lucide.createIcons({ nodes: [btn] });
+  }
+
+  function togglePlay(btn) {
+    const sceneId = btn.dataset.scene;
+    if (currentlyPlaying === sceneId) { stopScene(sceneId); return; }
+    if (currentlyPlaying) stopScene(currentlyPlaying);
+    const sounds = JSON.parse(btn.dataset.sounds);
+    sounds.forEach(s => {
+      const audio = document.getElementById('audio-' + sceneId + '-' + s.id);
+      if (audio) { audio.volume = toAudioVol(s.level); audio.currentTime = 0; audio.play().catch(() => {}); }
+    });
+    currentlyPlaying = sceneId;
+    btn.classList.add('playing');
+    setIcon(btn, 'pause');
+    const row = btn.closest('.scene-row');
+    if (row) row.querySelector('.scene-vinyl').classList.add('spinning');
+  }
+
+  function stopScene(sceneId) {
+    const btn = document.getElementById('play-btn-' + sceneId);
+    if (!btn) return;
+    const sounds = JSON.parse(btn.dataset.sounds);
+    sounds.forEach(s => {
+      const audio = document.getElementById('audio-' + sceneId + '-' + s.id);
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+    });
+    currentlyPlaying = null;
+    btn.classList.remove('playing');
+    setIcon(btn, 'volume-2');
+    const row = btn.closest('.scene-row');
+    if (row) row.querySelector('.scene-vinyl').classList.remove('spinning');
+  }
+
+  window.addEventListener('beforeunload', () => {
+    if (currentlyPlaying) stopScene(currentlyPlaying);
+  });
+</script>
+
+{% endblock %}
