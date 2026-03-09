@@ -9,7 +9,7 @@ The app allows users to upload, record, or link sounds from anywhere on the web,
 Echo was built out of a genuine love for ambient sound and the role it plays in focus, creativity, and relaxation. The goal was to create something that felt like a personal sound studio, intuitive, atmospheric, and genuinely useful.
 
 # Deployment Link
-Live App:
+Live App:https://echo-app-3d864b6f2c84.herokuapp.com/
 
 # Demo Login (for reviewers):
 Username: admin
